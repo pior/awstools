@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+from argh import arg, alias, ArghParser, confirm, wrap_errors
+
+from awstools import find_stacks, find_one_stack
+from awstools.display import (format_stack_summary,
+                              format_stack_events)
+
+
+HELP_SN = "The name of the stack like tt-python-production"
+HELP_TMPL = "Force a different template file"
+
+
+
+@alias('list')
+@arg('-a', '--all', default=False)
+@arg('stack_name', nargs='?', default='')
+def ls(args):
+    stacks = find_stacks(args.stack_name, findall=args.all)
+    for stack in stacks:
+        yield format_stack_summary(stack, oneline=True)
+
+
+
+@arg('stack_name', help=HELP_SN)
+@arg('--template', help=HELP_TMPL)
+def create(args):
+    pass
+
+
+
+@arg('stack_name', help=HELP_SN)
+@arg('--template', help=HELP_TMPL)
+def update(args):
+    pass
+
+
+
+@arg('stack_name', help=HELP_SN)
+def delete(args):
+    pass
+
+
+
+@arg('stack_name', help=HELP_SN)
+@wrap_errors(ValueError)
+def info(args):
+    stack = find_one_stack(args.stack_name, summary=False)
+    yield ''
+
+    yield format_stack_summary(stack)
+    yield ''
+
+    for param in stack.parameters:
+        yield str(param)
+    yield ''
+
+    for output in stack.outputs:
+        yield str(output)
+    yield ''
+
+    yield format_stack_events(stack, limit=10)
+    yield ''
+
+    for resource in stack.describe_resources():
+        yield "{r}\n  {r.resource_status} {r.physical_resource_id}".format(r=resource)
+        # 'AWS::AutoScaling::AutoScalingGroup'
+        # 'AWS::AutoScaling::LaunchConfiguration'
+        # 'AWS::Route53::RecordSet'
+        # 'AWS::EC2::SecurityGroup'
+        # 'AWS::EC2::SecurityGroupIngress'
+    yield ""
+
+
+@arg('stack_name', help=HELP_SN)
+@wrap_errors(ValueError)
+def events(args):
+    stack = find_one_stack(args.stack_name, summary=False)
+    yield ''
+    yield format_stack_summary(stack)
+    yield ''
+    yield format_stack_events(stack)
+    yield ''
+
+
+
+if __name__ == '__main__':
+    parser = ArghParser()
+    parser.add_commands([ls, create, update, delete, info, events])
+    parser.dispatch()
+
