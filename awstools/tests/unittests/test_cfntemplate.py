@@ -6,13 +6,11 @@ import mock
 from awstools import cfntemplate
 
 cfntemplate_skeleton = """{
-    "AWSTemplateFormatVersion": "version",
-    "Description": "description",
+    "AWSTemplateFormatVersion": "Version",
+    "Description": "Description",
     "Parameters": {"Parameters": "Parameters"},
     "Resources": {"Resources": "Resources"}
 }"""
-
-
 
 
 class TestCfnTemplate(unittest.TestCase):
@@ -77,5 +75,7 @@ class TestCfnTemplate(unittest.TestCase):
             cfntemplate_skeleton)
 
         template = cfntemplate.CfnTemplate('/skeleton')
-        self.assertEquals(template.parameters,
-                          {"Resources": "Resources"})
+        self.assertEquals(template.parameters, ['Parameters'])
+        self.assertEquals(template.description, 'Description')
+        self.assertEquals(template.resources, ['Resources'])
+        self.assertEquals(template.version, 'Version')
