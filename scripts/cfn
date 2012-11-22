@@ -1,55 +1,170 @@
 #!/usr/bin/env python
+import os
+import pkg_resources
 
 from argh import arg, alias, ArghParser, confirm, wrap_errors
+from argh.exceptions import CommandError
+from boto.exception import BotoServerError
 
+import awstools
 from awstools import find_stacks, find_one_stack
 from awstools.display import (format_stack_summary,
                               format_stack_events)
+from awstools.application import Applications
+from awstools import cfntemplate
 
 
-HELP_SN = "The name of the stack like tt-python-production"
-HELP_TMPL = "Force a different template file"
+HELP_SN = "the name of the stack like tt-python-production"
+HELP_TMPL = "force a different template file"
+HELP_CFG = "path of an alternative configuration file"
+HELP_SETTINGS = "path of the application settings configuration file"
+
+def initialize_from_cli(args):
+    """
+    Read the configuration and settings file and lookup for a stack_info"""
+
+    config = awstools.read_config(args.config)
+
+    if args.settings:
+        settings = args.settings
+    else:
+        settings = config.get("cfn", "settings")
+
+    if hasattr(args, 'stack_name'):
+        apps = Applications(settings)
+        app = apps.get(stackname=args.stack_name)
+        sinfo = app.get_stack_info_from_stackname(args.stack_name)
+    else:
+        sinfo = None
+
+    return config, settings, sinfo
+
+def warn_for_live(sinfo):
+    if sinfo['live'] and sinfo['Environment'] == 'production':
+        if not confirm("WARNING: Updating a live stack! Are you sure? "):
+            raise CommandError("Aborted")
 
 
-
-@alias('list')
 @arg('-a', '--all', default=False)
 @arg('stack_name', nargs='?', default='')
+@alias('list')
 def ls(args):
     stacks = find_stacks(args.stack_name, findall=args.all)
     for stack in stacks:
         yield format_stack_summary(stack, oneline=True)
 
 
-
 @arg('stack_name', help=HELP_SN)
+@arg('--config', default=None, help=HELP_CFG)
+@arg('--settings', default=None, help=HELP_SETTINGS)
 @arg('--template', help=HELP_TMPL)
 def create(args):
-    pass
+    config, settings, sinfo = initialize_from_cli(args)
 
+    # Read template
+    template_path = os.path.join(
+        config.get("cfn", "templatedir"),
+        args.template if args.template else sinfo['template'])
+    template = cfntemplate.CfnTemplate(template_path)
+    parameters = cfntemplate.CfnParameters(template, sinfo)
+
+    print("\nStack name: {args.stack_name}\n"
+          "\nTemplate: {template!r}\n"
+          "\nParameters:\n"
+          "{parameters!r}\n".format(args=args,
+                                    template=template,
+                                    parameters=parameters))
+
+    if not confirm('Confirm this creation? ', default=True):
+        raise CommandError("Aborted")
+
+    try:
+        stackid = awstools.cfn().create_stack(
+            args.stack_name,
+            template_body=template.body,
+            parameters=parameters,
+            capabilities=['CAPABILITY_IAM'])
+        print("StackId %s" % stackid)
+    except BotoServerError as e:
+        if e.error_message:
+            raise CommandError("BotoServerError: " + e.error_message)
+        else:
+            raise e
 
 
 @arg('stack_name', help=HELP_SN)
+@arg('--config', default=None, help=HELP_CFG)
+@arg('--settings', default=None, help=HELP_SETTINGS)
 @arg('--template', help=HELP_TMPL)
 def update(args):
-    pass
+    config, settings, sinfo = initialize_from_cli(args)
 
+    # Read template
+    template = cfntemplate.CfnTemplate(
+        os.path.join(
+            config.get("cfn", "templatedir"),
+            args.template if args.template else sinfo['template']
+            )
+        )
+
+    parameters = cfntemplate.CfnParameters(template, sinfo)
+
+    print("\nStack name: {args.stack_name}\n"
+          "\nTemplate: {template!r}\n"
+          "\nParameters:\n"
+          "{parameters!r}\n".format(args=args,
+                                    template=template,
+                                    parameters=parameters))
+    warn_for_live(sinfo)
+
+    if not confirm('Confirm the update? ', default=True):
+        raise CommandError("Aborted")
+
+    try:
+        stackid = awstools.cfn().update_stack(
+            args.stack_name,
+            template_body=template.body,
+            parameters=parameters,
+            capabilities=['CAPABILITY_IAM'])
+        print("StackId %s" % stackid)
+    except BotoServerError as e:
+        if e.error_message:
+            raise CommandError("BotoServerError: " + e.error_message)
+        else:
+            raise e
 
 
 @arg('stack_name', help=HELP_SN)
+@arg('--config', default=None, help=HELP_CFG)
+@arg('--settings', default=None, help=HELP_SETTINGS)
 def delete(args):
-    pass
+    config, settings, sinfo = initialize_from_cli(args)
 
+    stack = find_one_stack(args.stack_name)
+
+    print(format_stack_summary(stack))
+
+    warn_for_live(sinfo)
+
+    if not confirm('Confirm the deletion? ', default=True):
+        raise CommandError("Aborted")
+
+    try:
+        res = awstools.cfn().delete_stack(stack.stack_name)
+    except BotoServerError as e:
+        if e:
+            raise CommandError("BotoServerError: " + e.error_message)
+        else:
+            raise e
+    print("Result %s" % res)
 
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors(ValueError)
 def info(args):
     stack = find_one_stack(args.stack_name, summary=False)
-    yield ''
 
-    yield format_stack_summary(stack)
-    yield ''
+    yield format_stack_summary(stack) + '\n'
 
     for param in stack.parameters:
         yield str(param)
@@ -59,33 +174,26 @@ def info(args):
         yield str(output)
     yield ''
 
-    yield format_stack_events(stack, limit=10)
-    yield ''
+    yield format_stack_events(stack, limit=10) + '\n'
 
     for resource in stack.describe_resources():
         yield "{r}\n  {r.resource_status} {r.physical_resource_id}".format(r=resource)
-        # 'AWS::AutoScaling::AutoScalingGroup'
-        # 'AWS::AutoScaling::LaunchConfiguration'
-        # 'AWS::Route53::RecordSet'
-        # 'AWS::EC2::SecurityGroup'
-        # 'AWS::EC2::SecurityGroupIngress'
-    yield ""
+    yield ''
 
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors(ValueError)
 def events(args):
     stack = find_one_stack(args.stack_name, summary=False)
-    yield ''
-    yield format_stack_summary(stack)
-    yield ''
-    yield format_stack_events(stack)
-    yield ''
+    yield format_stack_summary(stack) + '\n'
+    yield format_stack_events(stack) + '\n'
 
 
 
-if __name__ == '__main__':
-    parser = ArghParser()
+def main():
+    parser = ArghParser(version=pkg_resources.get_distribution("awstools").version)
     parser.add_commands([ls, create, update, delete, info, events])
     parser.dispatch()
 
+if __name__ == '__main__':
+    main()
