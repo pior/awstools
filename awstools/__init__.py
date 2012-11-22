@@ -1,3 +1,6 @@
+import os
+from ConfigParser import ConfigParser
+
 import boto
 
 _cfn = None
@@ -8,10 +11,30 @@ def cfn():
         _cfn = boto.connect_cloudformation()
     return _cfn
 
+_defaults = {}
+def read_config(alternate_config=None):
+    """Helper for the configuration"""
+    _config = ConfigParser(_defaults)
+    if alternate_config:
+        _config.read(os.path.expanduser(alternate_config))
+    else:
+        _config.read(['awstools.cfg',
+                      os.path.expanduser('~/.awstools.cfg'),
+                      '/etc/awstools.cfg'])
+    return _config
+
 
 def find_stacks(pattern=None, findall=False):
     """Return a list of stacks matching a pattern"""
-    stacks = cfn().list_stacks()
+
+    stacks = []
+    next_token = None
+    while True:
+        rs = cfn().list_stacks(next_token=next_token)
+        stacks.extend(rs)
+        next_token = rs.next_token
+        if next_token is None:
+            break
 
     if pattern:
         stacks = [s for s in stacks if pattern in s.stack_name]
@@ -21,6 +44,7 @@ def find_stacks(pattern=None, findall=False):
         stacks = [s for s in stacks if s.stack_status not in INVALID_STATUS]
 
     return sorted(stacks, key=lambda k: k.stack_name)
+
 
 def find_one_stack(pattern, findall=False, summary=True):
     """Return the result is there is only one. Raise ValueError otherwise"""
