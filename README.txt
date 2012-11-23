@@ -19,8 +19,10 @@ Main conventions and choices:
 At the moment awstools supports:
 
 - `CloudFormation <http://aws.amazon.com/cloudformation>`_ smart management
+
   - **ApplicationSettings** (awstools.applications)
     Describe your application by declaring a set of *Pool* per *Environment*
+
   - **cfn**: List, Create, Update, Delete, Inspect
     Manage your AWS resources based on ApplicationSettings and cloudformation templates
 
@@ -37,16 +39,20 @@ Python requirements:
 Configuration
 =============
 
-| You must have a valid boto credentials provider to use the awstools.
-| See the `Boto tutorial <http://docs.pythonboto.org/en/latest/boto_config_tut.html>`_.
+::
+
+    You must have a valid boto credentials provider to use the awstools.
+    See the `Boto tutorial <http://docs.pythonboto.org/en/latest/boto_config_tut.html>`_.
 
 - A **configuration file** is searched in this order:
+
   1. <specified by --config>
   2. ./awstools.cfg
   3. ~/.awstools.cfg
   4. /etc/awstools.cfg
 
 - An application settings file is searched in this order:
+
   1. specified by --settings
   2. specified by awstools configuration file
 
@@ -57,6 +63,7 @@ Testing
 Run the test with nose
 
 ::
+
     pip install -r requirements-test.txt
     nosetests
 
@@ -125,6 +132,6 @@ Contribute
 Want to contribute, report a but of request a feature ? The development goes on
 at Ludia's BitBucket account:
 
-- **Report bugs**: https://bitbucket.org/Ludia/awstools/issues
-- **Fork the code**: https://bitbucket.org/Ludia/awstools
+- **Report bugs**: https://bitbucket.org/pior/awstools/issues
+- **Fork the code**: https://bitbucket.org/pior/awstools
 - **Download**: http://pypi.python.org/pypi/awstools
