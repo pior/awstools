@@ -51,6 +51,16 @@ Configuration
   2. specified by awstools configuration file
 
 
+Testing
+=======
+
+Run the test with nose
+
+::
+    pip install -r requirements-test.txt
+    nosetests
+
+
 Examples
 ========
 
