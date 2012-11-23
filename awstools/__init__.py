@@ -3,13 +3,6 @@ from ConfigParser import ConfigParser
 
 import boto
 
-_cfn = None
-def cfn():
-    """Helper for Cloudformation connection"""
-    global _cfn
-    if _cfn is None:
-        _cfn = boto.connect_cloudformation()
-    return _cfn
 
 _defaults = {}
 def read_config(alternate_config=None):
@@ -27,10 +20,11 @@ def read_config(alternate_config=None):
 def find_stacks(pattern=None, findall=False):
     """Return a list of stacks matching a pattern"""
 
+    cfn = boto.connect_cloudformation()
     stacks = []
     next_token = None
     while True:
-        rs = cfn().list_stacks(next_token=next_token)
+        rs = cfn.list_stacks(next_token=next_token)
         stacks.extend(rs)
         next_token = rs.next_token
         if next_token is None:
@@ -62,4 +56,5 @@ def find_one_stack(pattern, findall=False, summary=True):
     if summary:
         return stacks[0]
     else:
-        return cfn().describe_stacks(stacks[0].stack_name)[0]
+        cfn = boto.connect_cloudformation()
+        return cfn.describe_stacks(stacks[0].stack_name)[0]

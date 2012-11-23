@@ -1,4 +1,5 @@
-from awstools import cfn
+import boto
+
 
 def format_stack_summary(stack, oneline=False):
     if oneline:
@@ -11,7 +12,8 @@ def format_stack_summary(stack, oneline=False):
 
 
 def format_stack_events(stack, limit=None):
-    events = list(cfn().describe_stack_events(stack.stack_name))
+    cfn = boto.connect_cloudformation()
+    events = list(cfn.describe_stack_events(stack.stack_name))
     if limit:
         events = events[0:limit]
     def formatline(e):
