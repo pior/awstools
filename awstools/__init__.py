@@ -5,6 +5,8 @@ import boto
 
 
 _defaults = {}
+
+
 def read_config(alternate_config=None):
     """Helper for the configuration"""
     _config = ConfigParser(_defaults)

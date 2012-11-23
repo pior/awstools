@@ -19,6 +19,7 @@ HELP_TMPL = "force a different template file"
 HELP_CFG = "path of an alternative configuration file"
 HELP_SETTINGS = "path of the application settings configuration file"
 
+
 def initialize_from_cli(args):
     """
     Read the configuration and settings file and lookup for a stack_info"""
@@ -38,6 +39,7 @@ def initialize_from_cli(args):
         sinfo = None
 
     return config, settings, sinfo
+
 
 def warn_for_live(sinfo):
     if sinfo['live'] and sinfo['Environment'] == 'production':
@@ -187,7 +189,6 @@ def events(args):
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
     yield format_stack_events(stack) + '\n'
-
 
 
 def main():

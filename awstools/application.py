@@ -3,12 +3,18 @@ import collections
 import pprint
 import yaml
 
+
 class ApplicationError(Exception):
     pass
+
 class ApplicationNotFound(ApplicationError):
     pass
+
+
 class ApplicationEnvironmentNotFound(ApplicationError):
     pass
+
+
 class ApplicationPoolNotFound(ApplicationError):
     pass
 
@@ -20,6 +26,7 @@ class Application(object):
 
     def __repr__(self):
         return '<Application %s>' % self.name
+
     def __str__(self):
         return pprint.pformat(self.properties)
 
@@ -44,12 +51,15 @@ class Application(object):
     @property
     def name(self):
         return self._prop('Application')
+
     @property
     def shortname(self):
         return self._prop('ShortName')
+
     @property
     def live(self):
         return self._prop('live')
+
     @property
     def environments(self):
         return self.properties['environments'].keys()
