@@ -4,6 +4,7 @@ import pkg_resources
 
 from argh import arg, alias, ArghParser, confirm, wrap_errors
 from argh.exceptions import CommandError
+import boto
 from boto.exception import BotoServerError
 
 import awstools
@@ -81,7 +82,7 @@ def create(args):
         raise CommandError("Aborted")
 
     try:
-        stackid = awstools.cfn().create_stack(
+        stackid = boto.connect_cloudformation().create_stack(
             args.stack_name,
             template_body=template.body,
             parameters=parameters,
@@ -123,7 +124,7 @@ def update(args):
         raise CommandError("Aborted")
 
     try:
-        stackid = awstools.cfn().update_stack(
+        stackid = boto.connect_cloudformation().update_stack(
             args.stack_name,
             template_body=template.body,
             parameters=parameters,
@@ -152,7 +153,7 @@ def delete(args):
         raise CommandError("Aborted")
 
     try:
-        res = awstools.cfn().delete_stack(stack.stack_name)
+        res = boto.connect_cloudformation().delete_stack(stack.stack_name)
     except BotoServerError as e:
         if e:
             raise CommandError("BotoServerError: " + e.error_message)
