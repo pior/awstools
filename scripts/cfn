@@ -186,6 +186,24 @@ def info(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors(ValueError)
+def resources(args):
+    stack = find_one_stack(args.stack_name, summary=False)
+
+    yield format_stack_summary(stack) + '\n'
+
+    tmpl = "  ".join([
+                     "{r.logical_resource_id:<24}",
+                     "{r.physical_resource_id:<60}",
+                     "[{r.resource_status}] {r.resource_type}"
+                     ])
+
+    for resource in stack.describe_resources():
+        yield tmpl.format(r=resource)
+    yield ''
+
+
+@arg('stack_name', help=HELP_SN)
+@wrap_errors(ValueError)
 def events(args):
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
@@ -194,7 +212,15 @@ def events(args):
 
 def main():
     parser = ArghParser(version=pkg_resources.get_distribution("awstools").version)
-    parser.add_commands([ls, create, update, delete, info, events])
+    parser.add_commands([
+                        ls,
+                        create,
+                        update,
+                        delete,
+                        info,
+                        resources,
+                        events
+                        ])
     parser.dispatch()
 
 if __name__ == '__main__':
