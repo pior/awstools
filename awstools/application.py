@@ -31,6 +31,11 @@ class ApplicationPoolNotFound(ApplicationError):
 
 
 class Application(object):
+    """
+    Represents the properties of an application (direct and inherited from
+    a model).
+    """
+
     def __init__(self, properties):
         if not isinstance(properties, dict):
             raise ApplicationInvalid
@@ -127,6 +132,9 @@ class Application(object):
 
 
 class Applications(object):
+    """
+    Collection of Application
+    """
     def __init__(self, yamldata=None):
         self._apps = []
         if yamldata:
@@ -136,6 +144,9 @@ class Applications(object):
         return pprint.pformat(self._apps)
 
     def load_from_yaml(self, yamldata):
+        """
+        Load a set of Application definition from multiple document yaml stream
+        """
         docs = yaml.load_all(yamldata)
 
         self._apps = [Application(d) for d in docs]
@@ -145,6 +156,10 @@ class Applications(object):
             app.validate()
 
     def get(self, name=None, shortname=None, stackname=None):
+        """
+        Return the first matching Application.
+        Only compare the name or shortname even when matching with a stackname
+        """
         if stackname:
             shortname = stackname.split('-')[0]
 
