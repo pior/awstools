@@ -120,7 +120,7 @@ class Application(object):
 
 
 class Applications(object):
-    def __init__(self, settings_file=None):
+    def __init__(self, yamldata=None):
         self._apps = []
         if yamldata:
             self.load_from_yaml(yamldata)
