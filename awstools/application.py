@@ -122,9 +122,8 @@ class Applications(object):
     def __str__(self):
         return pprint.pformat(self._apps)
 
-    def load(self, settings_file):
-        path = os.path.expanduser(settings_file)
-        docs = yaml.load_all(open(path, 'rb'))
+    def load_from_yaml(self, yamldata):
+        docs = yaml.load_all(yamldata)
 
         self._apps = [Application(d) for d in docs]
 

@@ -33,7 +33,7 @@ def initialize_from_cli(args):
         settings = config.get("cfn", "settings")
 
     if hasattr(args, 'stack_name'):
-        apps = Applications(settings)
+        apps = Applications(settings_data)
         app = apps.get(stackname=args.stack_name)
         sinfo = app.get_stack_info_from_stackname(args.stack_name)
     else:
