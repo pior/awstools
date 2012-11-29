@@ -131,7 +131,7 @@ class Application(object):
         return stack_prop
 
 
-class Applications(object):
+class Applications(collections.Set):
     """
     Collection of Application
     """
@@ -139,6 +139,15 @@ class Applications(object):
         self._apps = []
         if yamldata:
             self.load_from_yaml(yamldata)
+
+    def __iter__(self):
+        return iter(self._apps)
+
+    def __contains__(self, value):
+        return value in self._apps
+
+    def __len__(self):
+        return len(self._apps)
 
     def __str__(self):
         return pprint.pformat(self._apps)
@@ -151,7 +160,7 @@ class Applications(object):
 
         self._apps = [Application(d) for d in docs]
 
-        for app in self._apps:
+        for app in self:
             app.apply_model(self)
             app.validate()
 
@@ -163,7 +172,7 @@ class Applications(object):
         if stackname:
             shortname = stackname.split('-')[0]
 
-        for app in self._apps:
+        for app in self:
             if name and app.name != name:
                 continue
             if shortname and app.shortname != shortname:
