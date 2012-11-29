@@ -32,6 +32,8 @@ def initialize_from_cli(args):
     else:
         settings = config.get("cfn", "settings")
 
+    settings_data = open(os.path.expanduser(settings), 'rb')
+
     if hasattr(args, 'stack_name'):
         apps = Applications(settings_data)
         app = apps.get(stackname=args.stack_name)
