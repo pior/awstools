@@ -122,8 +122,8 @@ class Application(object):
 class Applications(object):
     def __init__(self, settings_file=None):
         self._apps = []
-        if settings_file:
-            self.load(settings_file)
+        if yamldata:
+            self.load_from_yaml(yamldata)
 
     def __str__(self):
         return pprint.pformat(self._apps)
