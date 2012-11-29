@@ -13,6 +13,11 @@ import yaml
 class ApplicationError(Exception):
     pass
 
+
+class ApplicationInvalid(ApplicationError):
+    pass
+
+
 class ApplicationNotFound(ApplicationError):
     pass
 
@@ -27,6 +32,8 @@ class ApplicationPoolNotFound(ApplicationError):
 
 class Application(object):
     def __init__(self, properties):
+        if not isinstance(properties, dict):
+            raise ApplicationInvalid
         self.model = False
         self.properties = properties
 
@@ -45,7 +52,7 @@ class Application(object):
             try:
                 getattr(self, prop)
             except KeyError as e:
-                raise Exception("Missing properties: %s" % e)
+                raise ApplicationInvalid("Missing properties: %s" % e)
 
     def _prop(self, prop):
         if prop in self.properties:
@@ -79,7 +86,7 @@ class Application(object):
             el = parts.pop(0)
             try:
                 int(el)
-            except:
+            except ValueError:
                 environment = el
             else:
                 environment = "production"
