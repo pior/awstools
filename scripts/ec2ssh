@@ -98,7 +98,7 @@ def connect(args):
                         instance.private_ip_address,
                         )
 
-                host = instances[0].public_dns_name
+                host = instance.public_dns_name
                 subprocess.call(['ssh', host] + args.command)
 
         if args.verbose:
