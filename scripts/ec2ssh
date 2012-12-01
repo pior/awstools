@@ -39,7 +39,6 @@ valid specifiers:
 @argh.arg('-v', '--verbose', default=False, help=HELP_VERBOSE)
 @argh.arg('-y', '--yes', default=False, help=HELP_YES)
 @argh.arg('-1', '--one', default=False, help=HELP_ONE)
-@argh.wrap_errors(ValueError)
 def connect(args):
     """SSH to multiple EC2 instances by name, instance-id or private ip"""
 
@@ -91,7 +90,6 @@ def connect(args):
             except OSError as e:
                 raise Exception("Failed to call the ssh command: %s" % e)
         else:
-
             for instance in instances:
                 if args.verbose:
                     yield "----- %s: %s  %s" % (
@@ -108,8 +106,10 @@ def connect(args):
 
 
 def main():
-    parser = argh.ArghParser(epilog=epilog,
-                        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argh.ArghParser(
+        epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+        )
     parser.set_default_command(connect)
     parser.dispatch()
 
