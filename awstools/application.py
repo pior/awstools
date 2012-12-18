@@ -22,11 +22,11 @@ class ApplicationNotFound(ApplicationError):
     pass
 
 
-class ApplicationEnvironmentNotFound(ApplicationError):
+class ApplicationEnvironmentNotFound(ApplicationNotFound):
     pass
 
 
-class ApplicationPoolNotFound(ApplicationError):
+class ApplicationPoolNotFound(ApplicationNotFound):
     pass
 
 
@@ -107,7 +107,7 @@ class Application(object):
         if self.model:
             try:
                 stack_prop = self.model.get_stack_info(environment, pool)
-            except ApplicationEnvironmentNotFound:
+            except ApplicationNotFound:
                 stack_prop = {}
         else:
             stack_prop = {}
