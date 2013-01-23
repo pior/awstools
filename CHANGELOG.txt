@@ -1,0 +1,12 @@
+===========
+ Changelog
+===========
+
+develop
+=======
+
+* Add test for awstools.application.Application
+
+* Add Identifier support in stackname
+
+
