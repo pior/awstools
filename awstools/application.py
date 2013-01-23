@@ -4,10 +4,12 @@
 # you should have received as part of this distribution.
 # Author: Pior Bastida <pbastida@socialludia.com>
 
-import os
 import collections
 import pprint
+import re
+
 import yaml
+
 
 
 class ApplicationError(Exception):
@@ -87,26 +89,25 @@ class Application(object):
         if parts.pop(0) != self._prop("ShortName"):
             raise ApplicationError("Wrong application")
         pool = parts.pop(0)
-        if parts:
-            el = parts.pop(0)
-            try:
-                int(el)
-            except ValueError:
-                environment = el
-            else:
-                environment = "production"
-        else:
-            environment = "production"
-        return self.get_stack_info(environment, pool)
+        environment = parts.pop(0)
+        try:
+            identifier = parts.pop(0)
+        except IndexError:
+            identifier = None
+        return self.get_stack_info(environment=environment,
+                                   pool=pool,
+                                   identifier=identifier)
 
-    def get_stack_info(self, environment, pool, **kwargs):
+    def get_stack_info(self, environment, pool, identifier=None, **kwargs):
         if environment not in self.environments:
             raise ApplicationEnvironmentNotFound("No such environment: %s" % environment)
 
         # Seed the stack properties from model
         if self.model:
             try:
-                stack_prop = self.model.get_stack_info(environment, pool)
+                stack_prop = self.model.get_stack_info(environment=environment,
+                                                       pool=pool,
+                                                       identifier=identifier)
             except ApplicationNotFound:
                 stack_prop = {}
         else:
@@ -116,8 +117,21 @@ class Application(object):
         stack_prop.update(self.properties)
         stack_prop.pop('environments')
 
+        # Search for a matching pool/id
+        pools = self.properties['environments'][environment]
+
+        app_pool_prop = pools.get(pool) # use default pool (without id)
+
+        for pool_name, pool_props in pools.items(): # search matching id
+            match = re.match(pool + '\[(.+)\]', pool_name)
+            if match:
+                identifiers = map(str.strip,
+                                  match.groups()[0].split(','))
+                if identifier in identifiers:
+                    app_pool_prop = pool_props
+                    break
+
         # Update with pool level properties
-        app_pool_prop = self.properties['environments'][environment].get(pool)
         if app_pool_prop == True:    # True as empty dict to get model properties only
             app_pool_prop = {}
         if not isinstance(app_pool_prop, collections.Mapping):
