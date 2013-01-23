@@ -229,7 +229,7 @@ def main():
                         resources,
                         events
                         ])
-    parser.dispatch()
+    parser.dispatch(completion=False)
 
 if __name__ == '__main__':
     main()
