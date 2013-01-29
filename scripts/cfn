@@ -194,6 +194,17 @@ def info(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors(ValueError)
+def outputs(args):
+    stack = find_one_stack(args.stack_name, summary=False)
+
+    yield format_stack_summary(stack) + '\n'
+
+    for output in stack.outputs:
+        yield str(output)
+
+
+@arg('stack_name', help=HELP_SN)
+@wrap_errors(ValueError)
 def resources(args):
     stack = find_one_stack(args.stack_name, summary=False)
 
@@ -226,6 +237,7 @@ def main():
                         update,
                         delete,
                         info,
+                        outputs,
                         resources,
                         events
                         ])
