@@ -1,5 +1,6 @@
 include *.rst
 include LICENSE
 include AUTHORS
+include CHANGELOG
 
 include requirements*.txt
