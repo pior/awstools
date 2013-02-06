@@ -230,6 +230,14 @@ def events(args):
     yield format_stack_events(stack) + '\n'
 
 
+def activities(args):
+    stacks = find_stacks(None, findall=True)
+    for stack in stacks:
+        if stack.stack_status.endswith('_COMPLETE'):
+            continue
+        yield format_stack_summary_short(stack)
+
+
 def main():
     parser = ArghParser(version=pkg_resources.get_distribution("awstools").version)
     parser.add_commands([
@@ -240,7 +248,8 @@ def main():
                         info,
                         outputs,
                         resources,
-                        events
+                        events,
+                        activities,
                         ])
     parser.dispatch(completion=False)
 
