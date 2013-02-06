@@ -16,6 +16,7 @@ from boto.exception import BotoServerError
 import awstools
 from awstools import find_stacks, find_one_stack
 from awstools.display import (format_stack_summary,
+                              format_stack_summary_short,
                               format_stack_events)
 from awstools.application import Applications
 from awstools import cfntemplate
@@ -62,7 +63,7 @@ def warn_for_live(sinfo):
 def ls(args):
     stacks = find_stacks(args.stack_name, findall=args.all)
     for stack in stacks:
-        yield format_stack_summary(stack, oneline=True)
+        yield format_stack_summary_short(stack)
 
 
 @arg('stack_name', help=HELP_SN)

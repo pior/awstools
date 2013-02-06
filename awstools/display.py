@@ -7,14 +7,31 @@
 import boto
 
 
-def format_stack_summary(stack, oneline=False):
-    if oneline:
-        return "{s.stack_name:<30} {s.stack_status:<30} {s.creation_time}".format(s=stack)
+def format_stack_summary(stack):
+    tmpl  = "Name: {s.stack_name}\n"
+    tmpl += "Id: {s.stack_id}\n"
+    tmpl += "Status: {s.stack_status}\n"
+    tmpl += "Creation : {s.creation_time}\n"
+
+    if hasattr(stack, 'description'):
+        tmpl += "Template: {s.description}"
+    elif hasattr(stack, 'template_description'):
+        tmpl += "Template: {s.template_description}"
     else:
-        return "\n".join(["Name: {}".format(stack.stack_name),
-                          "Id: {}".format(stack.stack_id),
-                          "Status: {}".format(stack.stack_status),
-                          "Creation Time: {}".format(stack.creation_time)])
+        raise ValueError("Invalid Stack object")
+    return tmpl.format(s=stack)
+
+
+def format_stack_summary_short(stack):
+    tmpl = "{s.stack_name:<26} {s.stack_status:<18} {s.creation_time}"
+
+    if hasattr(stack, 'description'):
+        tmpl += " - {s.description}"
+    elif hasattr(stack, 'template_description'):
+        tmpl += " - {s.template_description}"
+    else:
+        raise ValueError("Invalid Stack object")
+    return tmpl.format(s=stack)
 
 
 def format_stack_events(stack, limit=None):
