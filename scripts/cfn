@@ -69,8 +69,6 @@ def ls(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@arg('--config', default=None, help=HELP_CFG)
-@arg('--settings', default=None, help=HELP_SETTINGS)
 @arg('--template', help=HELP_TMPL)
 def create(args):
     config, settings, sinfo = initialize_from_cli(args)
@@ -107,8 +105,6 @@ def create(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@arg('--config', default=None, help=HELP_CFG)
-@arg('--settings', default=None, help=HELP_SETTINGS)
 @arg('--template', help=HELP_TMPL)
 def update(args):
     config, settings, sinfo = initialize_from_cli(args)
@@ -149,8 +145,6 @@ def update(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@arg('--config', default=None, help=HELP_CFG)
-@arg('--settings', default=None, help=HELP_SETTINGS)
 def delete(args):
     config, settings, sinfo = initialize_from_cli(args)
 
@@ -377,6 +371,8 @@ def startup(args):
 
 def main():
     parser = ArghParser(version=pkg_resources.get_distribution("awstools").version)
+    parser.add_argument('--config', default=None, help=HELP_CFG)
+    parser.add_argument('--settings', default=None, help=HELP_SETTINGS)
     parser.add_commands([
                         ls,
                         create,
