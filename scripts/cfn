@@ -114,8 +114,8 @@ def update(args):
         os.path.join(
             config.get("cfn", "templatedir"),
             args.template if args.template else sinfo['template']
-            )
         )
+    )
 
     parameters = cfntemplate.CfnParameters(template, sinfo)
 
