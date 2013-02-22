@@ -66,3 +66,24 @@ def find_one_stack(pattern, findall=False, summary=True):
     else:
         cfn = boto.connect_cloudformation()
         return cfn.describe_stacks(stacks[0].stack_name)[0]
+
+
+def find_one_resource(stack, resource_type):
+    stackresources = stack.describe_resources()
+
+    resources = [r for r in stackresources if r.resource_type == resource_type]
+    if len(resources) == 0:
+        raise ValueError("This stack contains no AutoScale")
+    if len(resources) > 1:
+        raise ValueError("This stack contains more than one AutoScale")
+
+    if resource_type == "AWS::AutoScaling::AutoScalingGroup":
+        try:
+            asg = boto.connect_autoscale().get_all_groups(
+                [resources[0].physical_resource_id])[0]
+        except IndexError:
+            raise ValueError("The AutoScale physical id doesn't exist")
+        return asg
+
+    else:
+        raise NotImplementedError("Unkown resource type")
