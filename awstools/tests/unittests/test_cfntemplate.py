@@ -77,7 +77,7 @@ class TestCfnTemplate(unittest.TestCase):
 
     @mock.patch('__builtin__.open')
     def test_cfntemplate_cfntemplate_skeleton(self, mock_open):
-        mock_open.return_value =  StringIO.StringIO(
+        mock_open.return_value = StringIO.StringIO(
             cfntemplate_skeleton)
 
         template = cfntemplate.CfnTemplate('/skeleton')

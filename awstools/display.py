@@ -8,7 +8,7 @@ import boto
 
 
 def format_stack_summary(stack):
-    tmpl  = "Name: {s.stack_name}\n"
+    tmpl = "Name: {s.stack_name}\n"
     tmpl += "Id: {s.stack_id}\n"
     tmpl += "Status: {s.stack_status}\n"
     tmpl += "Creation : {s.creation_time}\n"

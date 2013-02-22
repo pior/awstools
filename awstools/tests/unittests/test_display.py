@@ -52,7 +52,6 @@ class TestDisplay(unittest.TestCase):
         self.assertIn('creation_time', fmt)
         self.assertIn('template_description', fmt)
 
-
     @mock.patch('boto.connect_cloudformation')
     def test_format_stack_events(self, mock_cfn):
         stack = mock.MagicMock(stack_name="stack_name")
@@ -66,7 +65,7 @@ class TestDisplay(unittest.TestCase):
 
         mock_cfn.return_value = mock.MagicMock(
             describe_stack_events=lambda x: [event]
-            )
+        )
 
         fmt = display.format_stack_events(stack)
 

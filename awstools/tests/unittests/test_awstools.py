@@ -50,7 +50,7 @@ class TestAwstools(unittest.TestCase):
         mock_cfn.list_stacks.side_effect = [
             teststacks1,
             teststacks2,
-            ]
+        ]
         mock_conn_cfn.return_value = mock_cfn
 
         res = awstools.find_stacks()
@@ -58,9 +58,9 @@ class TestAwstools(unittest.TestCase):
         self.assertEqual(mock_cfn.list_stacks.mock_calls,
                          [mock.call(next_token=None),
                           mock.call(next_token='tok')]
-                        )
+                         )
 
         self.assertEqual(
             [s.stack_name for s in res],
             stack_list
-            )
+        )

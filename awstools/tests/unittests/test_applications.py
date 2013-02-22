@@ -134,13 +134,13 @@ class TestApplications(unittest.TestCase):
             mock_app_un,
             mock_app_deux,
             mock_app_trois
-            ]
+        ]
 
         self.assertItemsEqual(
             apps,
             [mock_app_un, mock_app_deux, mock_app_trois],
             msg="Applications don't behave like a set"
-            )
+        )
 
         self.assertIs(apps.get(name='un'),
                       mock_app_un)
@@ -155,7 +155,7 @@ class TestApplications(unittest.TestCase):
         from awstools.application import (
             Applications,
             ApplicationNotFound
-            )
+        )
 
         apps = Applications()
 

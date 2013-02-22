@@ -11,7 +11,6 @@ import re
 import yaml
 
 
-
 class ApplicationError(Exception):
     pass
 
@@ -120,9 +119,9 @@ class Application(object):
         # Search for a matching pool/id
         pools = self.properties['environments'][environment]
 
-        app_pool_prop = pools.get(pool) # use default pool (without id)
+        app_pool_prop = pools.get(pool)  # use default pool (without id)
 
-        for pool_name, pool_props in pools.items(): # search matching id
+        for pool_name, pool_props in pools.items():  # search matching id
             match = re.match(pool + '\[(.+)\]', pool_name)
             if match:
                 identifiers = map(str.strip,
