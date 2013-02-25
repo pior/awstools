@@ -36,6 +36,7 @@ class TestEc2ssh(unittest.TestCase):
                               argv=argv,
                               output_file=self.stdout,
                               errors_file=self.stderr,
+                              completion=False,
                               )
 
         self.assertIn('CommandError', self.stderr.getvalue())
@@ -50,6 +51,7 @@ class TestEc2ssh(unittest.TestCase):
                               argv=argv,
                               output_file=self.stdout,
                               errors_file=self.stderr,
+                              completion=False,
                               )
 
         mock_execvp.assert_called_once_with(
@@ -69,6 +71,7 @@ class TestEc2ssh(unittest.TestCase):
                               argv=argv,
                               output_file=self.stdout,
                               errors_file=self.stderr,
+                              completion=False,
                               )
 
         mock_call.assert_any_call(

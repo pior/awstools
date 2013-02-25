@@ -42,6 +42,7 @@ class TestCfn(unittest.TestCase):
                               argv=[],
                               output_file=self.stdout,
                               errors_file=self.stderr,
+                              completion=False,
                               )
 
         for stack in self.stacks:
@@ -52,6 +53,7 @@ class TestCfn(unittest.TestCase):
                               argv=[self.stacks[0].stack_name],
                               output_file=self.stdout,
                               errors_file=self.stderr,
+                              completion=False,
                               )
 
     def test_command_info(self):
@@ -59,4 +61,5 @@ class TestCfn(unittest.TestCase):
                               argv=[self.stacks[0].stack_name],
                               output_file=self.stdout,
                               errors_file=self.stderr,
+                              completion=False,
                               )
