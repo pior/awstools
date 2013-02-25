@@ -32,6 +32,7 @@ HELP_LIMITS = "Specify the MIN:MAX parameters (eg: 10:20 or :2)"
 @arg('-a', '--all', default=False)
 @arg('stack_name', nargs='?', default='')
 @alias('list')
+@wrap_errors([ValueError, BotoServerError])
 def ls(args):
     stacks = find_stacks(args.stack_name, findall=args.all)
     for stack in stacks:
@@ -40,6 +41,7 @@ def ls(args):
 
 @arg('stack_name', help=HELP_SN)
 @arg('--template', help=HELP_TMPL)
+@wrap_errors([ValueError, BotoServerError])
 def create(args):
     config, settings, sinfo = initialize_from_cli(args)
 
@@ -76,6 +78,7 @@ def create(args):
 
 @arg('stack_name', help=HELP_SN)
 @arg('--template', help=HELP_TMPL)
+@wrap_errors([ValueError, BotoServerError])
 def update(args):
     config, settings, sinfo = initialize_from_cli(args)
 
@@ -115,6 +118,7 @@ def update(args):
 
 
 @arg('stack_name', help=HELP_SN)
+@wrap_errors([ValueError, BotoServerError])
 def delete(args):
     config, settings, sinfo = initialize_from_cli(args)
 
@@ -138,7 +142,7 @@ def delete(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@wrap_errors(ValueError)
+@wrap_errors([ValueError, BotoServerError])
 def info(args):
     stack = find_one_stack(args.stack_name, summary=False)
 
@@ -161,7 +165,7 @@ def info(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@wrap_errors(ValueError)
+@wrap_errors([ValueError, BotoServerError])
 def outputs(args):
     stack = find_one_stack(args.stack_name, summary=False)
 
@@ -172,7 +176,7 @@ def outputs(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@wrap_errors(ValueError)
+@wrap_errors([ValueError, BotoServerError])
 def resources(args):
     stack = find_one_stack(args.stack_name, summary=False)
 
@@ -190,7 +194,7 @@ def resources(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@wrap_errors(ValueError)
+@wrap_errors([ValueError, BotoServerError])
 def events(args):
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
@@ -237,7 +241,7 @@ def setlimit(args):
 
 @arg('stack_name', help=HELP_SN)
 @arg('capacity', type=int, help=HELP_CAP)
-@wrap_errors([BotoServerError])
+@wrap_errors([ValueError, BotoServerError])
 def setcapacity(args):
     """
     Change the "desired_capacity" parameter of the AutoScale in a stack
