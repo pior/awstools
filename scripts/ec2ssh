@@ -10,7 +10,7 @@ import pkg_resources
 import argparse
 import argh
 
-from awstools import commands
+from awstools.commands import ec2ssh
 
 
 epilog = """The 'instance' argument can be one or multiple specifiers
@@ -29,6 +29,6 @@ parser = argh.ArghParser(
     formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-parser.set_default_command(commands.ec2ssh.connect)
+parser.set_default_command(ec2ssh.connect)
 
 parser.dispatch(completion=False)
