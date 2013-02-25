@@ -10,7 +10,7 @@ import subprocess
 import argh
 from argh.exceptions import CommandError
 
-from awstools import utils
+from awstools.utils import ec2
 
 HELP_INSTANCE = "Instance or list of instances"
 HELP_COMMAND = "Command to run on the instances"
@@ -32,8 +32,8 @@ def connect(args):
     """SSH to multiple EC2 instances by name, instance-id or private ip"""
 
     if args.list:
-        instances = utils.ec2.get_instances()
-        names = sorted([utils.ec2.get_name(i) for i in instances])
+        instances = ec2.get_instances()
+        names = sorted([ec2.get_name(i) for i in instances])
         yield '\n'.join(names)
 
     elif args.instance is None:
@@ -45,9 +45,9 @@ def connect(args):
 
         try:
             specifiers = args.instance.lower().strip().split(',')
-            instances = utils.ec2.filter_instances(
+            instances = ec2.filter_instances(
                 specifiers,
-                utils.ec2.get_instances(),
+                ec2.get_instances(),
             )
             if len(instances) == 0:
                 raise CommandError("No instances found.")
@@ -65,7 +65,7 @@ def connect(args):
         if args.verbose and args.command:
             yield '----- Command: %s' % ' '.join(args.command)
         if args.verbose:
-            names = sorted([utils.ec2.get_name(i) for i in instances])
+            names = sorted([ec2.get_name(i) for i in instances])
             yield '----- Instances(%s): %s' % (len(names), ",".join(names))
 
         if args.confirm:
