@@ -26,6 +26,6 @@ parser = argh.ArghParser(
     formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-parser.set_default_command(ec2ssh.connect)
+argh.set_default_command(parser, ec2ssh.connect)
 
-parser.dispatch(completion=False)
+argh.dispatch(parser, completion=False)
