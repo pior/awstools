@@ -23,12 +23,12 @@ def format_stack_summary(stack):
 
 
 def format_stack_summary_short(stack):
-    tmpl = "{s.stack_name:<26} {s.stack_status:<18} {s.creation_time}"
+    tmpl = u"{s.stack_name:<26} {s.stack_status:<18} {s.creation_time}"
 
     if hasattr(stack, 'description'):
-        tmpl += " - {s.description}"
+        tmpl += u" - {s.description}"
     elif hasattr(stack, 'template_description'):
-        tmpl += " - {s.template_description}"
+        tmpl += u" - {s.template_description}"
     else:
         raise ValueError("Invalid Stack object")
     return tmpl.format(s=stack)

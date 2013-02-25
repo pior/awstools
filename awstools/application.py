@@ -99,7 +99,8 @@ class Application(object):
 
     def get_stack_info(self, environment, pool, identifier=None, **kwargs):
         if environment not in self.environments:
-            raise ApplicationEnvironmentNotFound("No such environment: %s" % environment)
+            raise ApplicationEnvironmentNotFound(
+                "No such environment: %s" % environment)
 
         # Seed the stack properties from model
         if self.model:
@@ -131,7 +132,8 @@ class Application(object):
                     break
 
         # Update with pool level properties
-        if app_pool_prop == True:    # True as empty dict to get model properties only
+        # True as empty dict to get model properties only
+        if app_pool_prop is True:
             app_pool_prop = {}
         if not isinstance(app_pool_prop, collections.Mapping):
             raise ApplicationPoolNotFound("No such pool: %s" % pool)

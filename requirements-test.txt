@@ -1,4 +1,5 @@
 -e .
+ipdb
 d2to1
 nose
 nosexcover

@@ -9,7 +9,6 @@ import unittest
 import mock
 # import boto
 
-import awstools
 
 
 class Stack(object):
@@ -46,6 +45,8 @@ class TestAwstools(unittest.TestCase):
 
     @mock.patch('boto.connect_cloudformation')
     def test_find_stacks_valid(self, mock_conn_cfn):
+        from awstools import utils
+
         mock_cfn = mock.MagicMock()
         mock_cfn.list_stacks.side_effect = [
             teststacks1,
@@ -53,7 +54,7 @@ class TestAwstools(unittest.TestCase):
         ]
         mock_conn_cfn.return_value = mock_cfn
 
-        res = awstools.find_stacks()
+        res = utils.cloudformation.find_stacks()
 
         self.assertEqual(mock_cfn.list_stacks.mock_calls,
                          [mock.call(next_token=None),
