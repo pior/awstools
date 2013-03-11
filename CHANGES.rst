@@ -2,7 +2,7 @@ Changelog for Awstools
 ======================
 
 
-0.3 (unreleased)
+0.3 (2013-03-11)
 ----------------
 
 - start using zest.releaser for versioning
