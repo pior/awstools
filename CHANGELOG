@@ -1,7 +1,0 @@
-Changelog
-=========
-
-0.2.3
-	- display template description in cfn subcommands
-	- create subcommand "cfn activities"
-
