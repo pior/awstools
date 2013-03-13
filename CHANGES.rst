@@ -2,10 +2,10 @@ Changelog for Awstools
 ======================
 
 
-0.4 (unreleased)
-----------------
+0.3.1 (unreleased)
+------------------
 
-- Nothing changed yet.
+- fix *cfn setcapacity* setting 0 instead of the desired value
 
 
 0.3 (2013-03-11)
