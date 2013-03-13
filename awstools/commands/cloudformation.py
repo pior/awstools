@@ -257,7 +257,7 @@ def setcapacity(args):
 
     update_asg_capacity(
         asg,
-        desired=0,
+        desired=args.capacity,
     )
 
 
