@@ -69,8 +69,9 @@ def connect(args):
             yield '----- Instances(%s): %s' % (len(names), ",".join(names))
 
         if args.confirm:
-            if not argh.confirm('Confirm', default=True):
-                raise CommandError("Aborted")
+            if not argh.confirm('Connect to all instances (y) or just one (n)',
+                                default=True):
+                instances = [instances[0]]
 
         if len(instances) == 1:
             host = instances[0].public_dns_name
