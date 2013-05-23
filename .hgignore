@@ -1,5 +1,7 @@
 syntax: glob
 
+*.pyc
+
 *.egg/
 *.egg-info
 
@@ -9,4 +11,6 @@ dist/
 build/
 
 nosetests.xml
+.noseids
+coverage.xml
 .coverage
