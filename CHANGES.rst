@@ -5,7 +5,9 @@ Changelog for Awstools
 0.3.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Complete hgignore
+- ec2ssh: enhance fallback when denying connection to multiple instances
+- Fix wrong current_capacity displayed in autoscale update utility
 
 
 0.3.1 (2013-03-13)
