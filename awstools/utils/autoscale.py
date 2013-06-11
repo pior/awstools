@@ -2,7 +2,7 @@
 
 def update_asg_capacity(asg, desired=None, minlimit=None, maxlimit=None):
     print("Current limits: %s:%s" % (asg.min_size, asg.max_size))
-    print("Current desired capacity %s" % desired)
+    print("Current desired capacity %s" % asg.desired_capacity)
 
     changed = False
 
@@ -26,5 +26,6 @@ def update_asg_capacity(asg, desired=None, minlimit=None, maxlimit=None):
 
     if changed:
         asg.update()
-
-    print("Success")
+        print("Success")
+    else:
+        print("Nothing to update")
