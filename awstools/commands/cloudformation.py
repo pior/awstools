@@ -121,6 +121,24 @@ def update(args):
             raise e
 
 
+@arg('stack_name', nargs='?', default='')
+@arg('-f', '--force', default=False, help=HELP_FORCE)
+@wrap_errors([ValueError, BotoServerError])
+def batch_update(args):
+    args.template = None
+
+    stacks = find_stacks(args.stack_name)
+    for stack in stacks:
+        yield format_stack_summary_short(stack)
+
+    if not confirm('Confirm the batch update? ', default=False):
+        raise CommandError("Aborted")
+
+    for stack in stacks:
+        args.stack_name = stack.stack_name
+        update(args)
+
+
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def delete(args):
