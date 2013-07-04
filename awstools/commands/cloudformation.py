@@ -136,7 +136,12 @@ def batch_update(args):
 
     for stack in stacks:
         args.stack_name = stack.stack_name
-        update(args)
+        try:
+            update(args)
+        except CommandError as error:
+            print error
+            if not confirm('Continue anyway?', default=True):
+                raise
 
 
 @arg('stack_name', help=HELP_SN)
