@@ -2,10 +2,11 @@ Changelog for Awstools
 ======================
 
 
-0.3.3 (unreleased)
+0.3.3 (2013-07-04)
 ------------------
 
-- Nothing changed yet.
+- Add --force option to `cfn update` command
+- Add a `cfn batch-update` command
 
 
 0.3.2 (2013-06-11)
