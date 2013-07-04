@@ -5,7 +5,7 @@ Changelog for Awstools
 0.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- cfn batch-update: continue after a failure if user wants to
 
 
 0.3.3 (2013-07-04)
