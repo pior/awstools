@@ -239,7 +239,7 @@ def activities(args):
 @arg('stack_name', help=HELP_SN)
 @arg('limits', help=HELP_LIMITS)
 @wrap_errors([ValueError, BotoServerError])
-def setlimit(args):
+def as_limits(args):
     """
     Change the min and/or max parameters of the AutoScale in a stack
     """
@@ -269,7 +269,7 @@ def setlimit(args):
 @arg('stack_name', help=HELP_SN)
 @arg('capacity', type=int, help=HELP_CAP)
 @wrap_errors([ValueError, BotoServerError])
-def setcapacity(args):
+def as_capacity(args):
     """
     Change the "desired_capacity" parameter of the AutoScale in a stack
     """
@@ -290,7 +290,7 @@ def setcapacity(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
-def shutdown(args):
+def as_stop(args):
     """
     Shutdown the stack: force the AutoScale to shut all instances down
     """
@@ -313,7 +313,7 @@ def shutdown(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
-def startup(args):
+def as_start(args):
     """
     Startup the stack: set AutoScale to start the instances up
     """
