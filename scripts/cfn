@@ -25,6 +25,7 @@ parser.add_commands([
     cloudformation.ls,
     cloudformation.create,
     cloudformation.update,
+    cloudformation.batch_update,
     cloudformation.delete,
     cloudformation.info,
     cloudformation.outputs,

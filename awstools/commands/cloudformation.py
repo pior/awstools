@@ -27,6 +27,7 @@ HELP_SN = "the name of the stack like tt-python-production"
 HELP_TMPL = "force a different template file"
 HELP_CAP = "AutoScale desired capacity"
 HELP_LIMITS = "Specify the MIN:MAX parameters (eg: 10:20 or :2)"
+HELP_FORCE = "Don't ask for confirmation"
 
 
 @arg('-a', '--all', default=False)
@@ -78,6 +79,7 @@ def create(args):
 
 @arg('stack_name', help=HELP_SN)
 @arg('--template', help=HELP_TMPL)
+@arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
 def update(args):
     config, settings, sinfo = initialize_from_cli(args)
@@ -98,10 +100,12 @@ def update(args):
           "{parameters!r}\n".format(args=args,
                                     template=template,
                                     parameters=parameters))
+
     warn_for_live(sinfo)
 
-    if not confirm('Confirm the update? ', default=True):
-        raise CommandError("Aborted")
+    if not args.force:
+        if not confirm('Confirm the update? ', default=True):
+            raise CommandError("Aborted")
 
     try:
         stackid = boto.connect_cloudformation().update_stack(
