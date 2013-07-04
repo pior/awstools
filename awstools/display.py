@@ -49,3 +49,10 @@ def format_stack_events(stack, limit=None):
                         reason=e.resource_status_reason)
 
     return "\n".join([formatline(e) for e in events])
+
+
+def format_autoscale(asg):
+    tmpl = ("AutoScaleGroup: {a.name}\n"
+            "AutoScaleGroup min:{a.min_size} max:{a.max_size} "
+            "capacity:{a.desired_capacity}\n")
+    return tmpl.format(a=asg)

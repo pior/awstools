@@ -14,11 +14,12 @@ from boto.exception import BotoServerError
 
 from awstools.display import (format_stack_summary,
                               format_stack_summary_short,
-                              format_stack_events)
+                              format_stack_events,
+                              format_autoscale)
 from awstools.utils.cloudformation import (find_stacks,
                                            find_one_stack,
                                            find_one_resource)
-from awstools.utils.autoscale import update_asg_capacity
+from awstools.utils.autoscale import update_asg
 from awstools.commands import initialize_from_cli, warn_for_live
 from awstools import cfntemplate
 
@@ -26,7 +27,9 @@ from awstools import cfntemplate
 HELP_SN = "the name of the stack like tt-python-production"
 HELP_TMPL = "force a different template file"
 HELP_CAP = "AutoScale desired capacity"
-HELP_LIMITS = "Specify the MIN:MAX parameters (eg: 10:20 or :2)"
+HELP_MIN = "AutoScaleGroup min constraint"
+HELP_MAX = "AutoScaleGroup max constraint"
+HELP_DESIRED = "AutoScaleGroup desired value"
 HELP_FORCE = "Don't ask for confirmation"
 
 
@@ -237,94 +240,86 @@ def activities(args):
 
 
 @arg('stack_name', help=HELP_SN)
-@arg('limits', help=HELP_LIMITS)
+@arg('min', nargs='?', help=HELP_MIN)
+@arg('max', nargs='?', help=HELP_MAX)
+@arg('desired', nargs='?', help=HELP_DESIRED)
 @wrap_errors([ValueError, BotoServerError])
-def as_limits(args):
+def as_control(args):
     """
-    Change the min and/or max parameters of the AutoScale in a stack
+    Control the stack: update the AutoScaleGroup constraints
     """
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
-    print(format_stack_summary(stack))
-
-    warn_for_live(sinfo)
+    yield format_stack_summary(stack) + '\n'
 
     asg = find_one_resource(stack, 'AWS::AutoScaling::AutoScalingGroup')
-    print("AutoScale ID: %s" % asg.name)
+    yield format_autoscale(asg)
 
-    try:
-        limits = args.limits.split(':')
-        minlimit = int(limits[0]) if limits[0] else None
-        maxlimit = int(limits[1]) if limits[1] else None
-    except:
-        raise ValueError("Invalid limit format ")
+    if args.min or args.max or args.desired:
+        try:
+            minlimit = int(args.min)
+            maxlimit = int(args.max)
+            desired = int(args.desired)
+        except:
+            raise ValueError("Invalid value")
 
-    update_asg_capacity(
-        asg,
-        minlimit=minlimit,
-        maxlimit=maxlimit,
-    )
+        warn_for_live(sinfo)
 
+        updated = update_asg(
+            asg,
+            minlimit=minlimit,
+            maxlimit=maxlimit,
+            desired=desired,
+        )
 
-@arg('stack_name', help=HELP_SN)
-@arg('capacity', type=int, help=HELP_CAP)
-@wrap_errors([ValueError, BotoServerError])
-def as_capacity(args):
-    """
-    Change the "desired_capacity" parameter of the AutoScale in a stack
-    """
-    config, settings, sinfo = initialize_from_cli(args)
-    stack = find_one_stack(args.stack_name, summary=False)
-    print(format_stack_summary(stack))
-
-    warn_for_live(sinfo)
-
-    asg = find_one_resource(stack, 'AWS::AutoScaling::AutoScalingGroup')
-    print("AutoScale ID: %s" % asg.name)
-
-    update_asg_capacity(
-        asg,
-        desired=args.capacity,
-    )
+        if updated:
+            yield "Updated: %s" % ' '.join(updated)
+            yield format_autoscale(asg)
+        else:
+            yield "Nothing changed"
 
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def as_stop(args):
     """
-    Shutdown the stack: force the AutoScale to shut all instances down
+    Stop the stack: force the AutoScale to shut all instances down
     """
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
-    print(format_stack_summary(stack))
+    yield format_stack_summary(stack)
+
+    asg = find_one_resource(stack, 'AWS::AutoScaling::AutoScalingGroup')
+    yield format_autoscale(asg)
 
     warn_for_live(sinfo)
 
-    asg = find_one_resource(stack, 'AWS::AutoScaling::AutoScalingGroup')
-    print("AutoScale ID: %s" % asg.name)
-
-    update_asg_capacity(
+    updated = update_asg(
         asg,
-        desired=0,
         minlimit=0,
         maxlimit=0,
+        desired=0,
     )
+
+    if updated:
+        yield "Updated: %s" % ' '.join(updated)
+        yield format_autoscale(asg)
+    else:
+        yield "Nothing changed"
 
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def as_start(args):
     """
-    Startup the stack: set AutoScale to start the instances up
+    Start the stack: set AutoScale control to configured values
     """
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
     print(format_stack_summary(stack))
 
-    warn_for_live(sinfo)
-
     asg = find_one_resource(stack, 'AWS::AutoScaling::AutoScalingGroup')
-    print("AutoScale ID: %s" % asg.name)
+    yield format_autoscale(asg)
 
     try:
         minlimit = int(sinfo['AutoScaleMinSize'])
@@ -333,9 +328,17 @@ def as_start(args):
     except:
         raise ValueError("Invalid AutoScale information in stack definition")
 
-    update_asg_capacity(
+    warn_for_live(sinfo)
+
+    updated = update_asg(
         asg,
-        desired=desired,
         minlimit=minlimit,
         maxlimit=maxlimit,
+        desired=desired,
     )
+
+    if updated:
+        yield "Updated: %s" % ' '.join(updated)
+        yield format_autoscale(asg)
+    else:
+        yield "Nothing changed"

@@ -33,8 +33,7 @@ parser.add_commands([
     cloudformation.events,
     cloudformation.activities,
 
-    cloudformation.as_limit,
-    cloudformation.as_capacity,
+    cloudformation.as_control,
     cloudformation.as_stop,
     cloudformation.as_start,
 ])
