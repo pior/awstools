@@ -5,6 +5,7 @@
 # Author: Pior Bastida <pbastida@socialludia.com>
 
 import os
+import json
 import subprocess
 
 import argh
@@ -19,6 +20,9 @@ HELP_CONFIRM = "Always confirm"
 HELP_VERBOSE = "Verbose mode"
 HELP_ONE = "Run on the first instance found only"
 HELP_YES = "Always answer yes"
+HELP_COMPLETION = "Helper for completion (list eventually uptodate)"
+HELP_COMPLETION = "Output a script to setup bash completion"
+
 
 
 @argh.arg('instance', default=None, nargs='?', help=HELP_INSTANCE)
@@ -28,10 +32,21 @@ HELP_YES = "Always answer yes"
 @argh.arg('-v', '--verbose', default=False, help=HELP_VERBOSE)
 @argh.arg('-y', '--yes', default=False, help=HELP_YES)
 @argh.arg('-1', '--one', default=False, help=HELP_ONE)
+@argh.arg('--completion-list', default=False)
+@argh.arg('--completion-script', default=False, help=HELP_COMPLETION)
 def connect(args):
     """SSH to multiple EC2 instances by name, instance-id or private ip"""
 
-    if args.list:
+    if args.completion_list:
+        try:
+            yield " ".join(read_completion_list())
+        except IOError:
+            pass
+
+    elif args.completion_script:
+        yield bash_completion_install_script
+
+    elif args.list:
         instances = ec2.get_instances()
         names = sorted([ec2.get_name(i) for i in instances])
         yield '\n'.join(names)
@@ -44,11 +59,11 @@ def connect(args):
             raise CommandError("Option confirm and yes are not compatible")
 
         try:
+            instances = ec2.get_instances()
+            write_completion_list(instances)
+
             specifiers = args.instance.lower().strip().split(',')
-            instances = ec2.filter_instances(
-                specifiers,
-                ec2.get_instances(),
-            )
+            instances = ec2.filter_instances(specifiers, instances)
             if len(instances) == 0:
                 raise CommandError("No instances found.")
         except KeyboardInterrupt:
@@ -93,3 +108,42 @@ def connect(args):
 
         if args.verbose:
             yield '----- DONE'
+
+
+def write_completion_list(instances):
+    names = sorted([ec2.get_name(i) for i in instances])
+    fname = os.path.expanduser("~/.ec2ssh_completion")
+    with open(fname, 'wb') as fp:
+        json.dump(names, fp, indent=2)
+
+
+def read_completion_list():
+    fname = os.path.expanduser("~/.ec2ssh_completion")
+    with open(fname, 'rb') as fp:
+        return json.load(fp)
+
+
+bash_completion_install_script = """
+_ec2ssh()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    case $cur in
+        -*)
+            case $prev in
+                *)
+                    opts="-l --list -c --confirm -v --verbose -y --yes -1 --one --completion-list --completion-script"
+                ;;
+            esac
+            ;;
+        *)
+            opts="$(ec2ssh --completion-list)"
+                ;;
+    esac
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
+}
+complete -F _ec2ssh ec2ssh
+"""
