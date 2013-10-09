@@ -32,10 +32,6 @@ parser.add_commands([
     cloudformation.resources,
     cloudformation.events,
     cloudformation.activities,
-
-    cloudformation.as_control,
-    cloudformation.as_stop,
-    cloudformation.as_start,
 ])
 
 parser.dispatch(completion=False)

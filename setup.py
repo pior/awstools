@@ -46,6 +46,7 @@ setup(
     extras_require={ 'test': ['nose', 'nosexcover', 'coverage', 'mock'] },
     entry_points={
         'console_scripts': [
+            'cfnas = awstools.commands.cfnautoscale:main',
         ]
     },
     scripts=[
