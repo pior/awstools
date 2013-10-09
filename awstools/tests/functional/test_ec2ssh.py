@@ -12,8 +12,6 @@ import mock
 import argh
 import boto
 
-from awstools import commands
-
 
 class TestEc2ssh(unittest.TestCase):
     @classmethod
@@ -31,8 +29,11 @@ class TestEc2ssh(unittest.TestCase):
         time.sleep(2)  # Protection against AWS api throttling
 
     def test_command_empty(self):
+        from awstools.commands import ec2ssh
+
         argv = []
-        argh.dispatch_command(commands.ec2ssh.connect,
+
+        argh.dispatch_command(ec2ssh.connect,
                               argv=argv,
                               output_file=self.stdout,
                               errors_file=self.stderr,
@@ -43,11 +44,13 @@ class TestEc2ssh(unittest.TestCase):
 
     @mock.patch('awstools.commands.ec2ssh.os.execvp')
     def test_command_id_single(self, mock_execvp):
+        from awstools.commands import ec2ssh
+
         command = ['remote' 'command']
         identifiers = ','.join([self.instances[0].id])
         argv = [identifiers] + command
 
-        argh.dispatch_command(commands.ec2ssh.connect,
+        argh.dispatch_command(ec2ssh.connect,
                               argv=argv,
                               output_file=self.stdout,
                               errors_file=self.stderr,
@@ -62,12 +65,14 @@ class TestEc2ssh(unittest.TestCase):
     @mock.patch('awstools.commands.ec2ssh.argh.confirm')
     @mock.patch('awstools.commands.ec2ssh.subprocess.call')
     def test_command_id_multi(self, mock_call, mock_confirm):
+        from awstools.commands import ec2ssh
+
         command = ['remote' 'command']
         identifiers = ','.join([self.instances[0].id,
                                self.instances[1].id])
         argv = [identifiers] + command
 
-        argh.dispatch_command(commands.ec2ssh.connect,
+        argh.dispatch_command(ec2ssh.connect,
                               argv=argv,
                               output_file=self.stdout,
                               errors_file=self.stderr,
@@ -83,3 +88,23 @@ class TestEc2ssh(unittest.TestCase):
         )
 
         self.assertTrue(mock_confirm.called)
+
+    @mock.patch('awstools.commands.ec2ssh.os.execvp')
+    def test_command_private_hostname_single(self, mock_execvp):
+        from awstools.commands import ec2ssh
+
+        command = ['remote' 'command']
+        identifiers = ','.join([self.instances[0].private_dns_name])
+        argv = [identifiers] + command
+
+        argh.dispatch_command(ec2ssh.connect,
+                              argv=argv,
+                              output_file=self.stdout,
+                              errors_file=self.stderr,
+                              completion=False,
+                              )
+
+        mock_execvp.assert_called_once_with(
+            'ssh',
+            ['ec2ssh', self.instances[0].public_dns_name] + command,
+        )
