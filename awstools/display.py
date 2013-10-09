@@ -6,6 +6,12 @@
 
 import boto
 
+from awstools.utils.cloudformation import (find_one_resource,
+                                           RES_TYPE_ASG,
+                                           RES_TYPE_ELB)
+
+
+
 
 def format_stack_summary(stack):
     tmpl = "Name: {s.stack_name}\n"
@@ -51,8 +57,39 @@ def format_stack_events(stack, limit=None):
     return "\n".join([formatline(e) for e in events])
 
 
-def format_autoscale(asg):
+def format_autoscale(asg, detail=False):
     tmpl = ("AutoScaleGroup: {a.name}\n"
             "AutoScaleGroup min:{a.min_size} max:{a.max_size} "
             "capacity:{a.desired_capacity}\n")
-    return tmpl.format(a=asg)
+
+    if detail:
+        tmpl += "AutoScaleGroup instances:\n  {instances}"
+
+    return tmpl.format(
+        a=asg,
+        instances='\n  '.join(map(repr, asg.instances)),
+    )
+
+
+def format_autoscale_instances(stack):
+    s = []
+
+    tmpl = "  ASG: {id} {health}/{state} LC:{lc}"
+
+    res_asg = find_one_resource(stack, RES_TYPE_ASG)
+
+    for i in res_asg.instances:
+        s.append(tmpl.format(id=i.instance_id,
+                             state=i.lifecycle_state,
+                             health=i.health_status,
+                             lc=i.launch_config_name))
+
+    tmpl = "  ELB: {i.instance_id} {i.state} ({i.reason_code})"
+
+    res_elb_id = find_one_resource(stack, RES_TYPE_ELB, only_id=True)
+    ihealth = boto.connect_elb().describe_instance_health(res_elb_id)
+
+    for i in ihealth:
+        s.append(tmpl.format(i=i))
+
+    return '\n'.join(s)

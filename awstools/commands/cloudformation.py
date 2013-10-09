@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2012 Ludia Inc.
+# Copyright (C) 2013 Ludia Inc.
 # This software is licensed as described in the file LICENSE, which
 # you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@socialludia.com>
+# Author: Pior Bastida <pbastida@ludia.com>
 
 import os
 
@@ -14,13 +14,13 @@ from boto.exception import BotoServerError
 
 from awstools.display import (format_stack_summary,
                               format_stack_summary_short,
-                              format_stack_events,
-                              format_autoscale)
+                              format_stack_events)
 from awstools.utils.cloudformation import (find_stacks,
-                                           find_one_stack,
-                                           find_one_resource)
-from awstools.utils.autoscale import update_asg
-from awstools.commands import initialize_from_cli, warn_for_live
+                                           find_one_stack)
+from awstools.commands import (get_base_parser,
+                               initialize_from_cli,
+                               warn_for_live,
+                               confirm_action)
 from awstools import cfntemplate
 
 
@@ -31,6 +31,23 @@ HELP_MIN = "AutoScaleGroup min constraint"
 HELP_MAX = "AutoScaleGroup max constraint"
 HELP_DESIRED = "AutoScaleGroup desired value"
 HELP_FORCE = "Don't ask for confirmation"
+
+
+def main():
+    parser = get_base_parser()
+
+    parser.add_commands([ls,
+                         create,
+                         update,
+                         batch_update,
+                         delete,
+                         info,
+                         outputs,
+                         resources,
+                         events,
+                         activities,])
+
+    parser.dispatch(completion=False)
 
 
 @arg('-a', '--all', default=False)
@@ -63,8 +80,7 @@ def create(args):
                                     template=template,
                                     parameters=parameters))
 
-    if not confirm('Confirm this creation? ', default=True):
-        raise CommandError("Aborted")
+    confirm_action(arg, default=True)
 
     try:
         stackid = boto.connect_cloudformation().create_stack(
@@ -105,10 +121,7 @@ def update(args):
                                     parameters=parameters))
 
     warn_for_live(sinfo)
-
-    if not args.force:
-        if not confirm('Confirm the update? ', default=True):
-            raise CommandError("Aborted")
+    confirm_action(arg, default=True)
 
     try:
         stackid = boto.connect_cloudformation().update_stack(
@@ -134,8 +147,7 @@ def batch_update(args):
     for stack in stacks:
         yield format_stack_summary_short(stack)
 
-    if not confirm('Confirm the batch update? ', default=False):
-        raise CommandError("Aborted")
+    confirm_action(arg, default=False)
 
     for stack in stacks:
         args.stack_name = stack.stack_name
@@ -148,18 +160,16 @@ def batch_update(args):
 
 
 @arg('stack_name', help=HELP_SN)
+@arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
 def delete(args):
     config, settings, sinfo = initialize_from_cli(args)
 
     stack = find_one_stack(args.stack_name)
-
-    print(format_stack_summary(stack))
+    yield format_stack_summary(stack)
 
     warn_for_live(sinfo)
-
-    if not confirm('Confirm the deletion? ', default=True):
-        raise CommandError("Aborted")
+    confirm_action(arg, default=True)
 
     try:
         res = boto.connect_cloudformation().delete_stack(stack.stack_name)

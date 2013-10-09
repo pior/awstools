@@ -13,6 +13,20 @@ import awstools
 from awstools.application import Applications
 
 
+def get_base_parser():
+    import pkg_resources
+    from argh import ArghParser
+
+    HELP_CFG = "path of an alternative configuration file"
+    HELP_SETTINGS = "path of the application settings configuration file"
+
+    parser = ArghParser(version=pkg_resources.get_distribution("awstools").version)
+    parser.add_argument('--config', default=None, help=HELP_CFG)
+    parser.add_argument('--settings', default=None, help=HELP_SETTINGS)
+
+    return parser
+
+
 def initialize_from_cli(args):
     """
     Read the configuration and settings file and lookup for a stack_info"""
@@ -40,3 +54,11 @@ def warn_for_live(sinfo):
     if sinfo['live'] and sinfo['Environment'] == 'production':
         if not confirm("WARNING: Updating a live stack! Are you sure? "):
             raise CommandError("Aborted")
+
+
+def confirm_action(arg, action="action", default=False):
+    if hasattr(arg, 'force') and arg.force:
+        return
+
+    if not confirm('Confirm %s? ' % action, default=default):
+        raise CommandError("Aborted")

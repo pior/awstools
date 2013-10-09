@@ -52,7 +52,11 @@ def find_one_stack(pattern, findall=False, summary=True):
         return cfn.describe_stacks(stacks[0].stack_name)[0]
 
 
-def find_one_resource(stack, resource_type):
+RES_TYPE_ASG = 'AWS::AutoScaling::AutoScalingGroup'
+RES_TYPE_ELB = 'AWS::ElasticLoadBalancing::LoadBalancer'
+
+
+def find_one_resource(stack, resource_type, only_id=False):
     stackresources = stack.describe_resources()
 
     resources = [r for r in stackresources if r.resource_type == resource_type]
@@ -61,13 +65,25 @@ def find_one_resource(stack, resource_type):
     if len(resources) > 1:
         raise ValueError("This stack contains more than one AutoScale")
 
-    if resource_type == "AWS::AutoScaling::AutoScalingGroup":
-        try:
-            asg = boto.connect_autoscale().get_all_groups(
-                [resources[0].physical_resource_id])[0]
-        except IndexError:
-            raise ValueError("The AutoScale physical id doesn't exist")
-        return asg
+    phy_id = resources[0].physical_resource_id
+
+    if resource_type == RES_TYPE_ASG:
+        if only_id:
+            return phy_id
+        else:
+            try:
+                return boto.connect_autoscale().get_all_groups([phy_id])[0]
+            except IndexError:
+                raise ValueError("The AutoScale physical id doesn't exist")
+
+    elif resource_type == RES_TYPE_ELB:
+        if only_id:
+            return phy_id
+        else:
+            try:
+                return boto.connect_elb().get_all_load_balancers([phy_id])[0]
+            except IndexError:
+                raise ValueError("The ELB physical id doesn't exist")
 
     else:
         raise NotImplementedError("Unkown resource type")
