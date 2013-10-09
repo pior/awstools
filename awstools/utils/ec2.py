@@ -27,11 +27,12 @@ def get_name(instance):
 def filter_instances(specifiers, instances):
     targets = set()
 
-    RE_INSTANCE_ID = re.compile('^i-[a-f0-9]{8}$', re.IGNORECASE)
+    RE_INSTANCE_ID = re.compile('^i-[a-fA-F0-9]{8}$')
     RE_PRIVATE_IP = re.compile('^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
+    RE_PRIVATE_HOSTNAME_1 = re.compile('^ip-10(-\d{1,3}){3}')
+    RE_PRIVATE_HOSTNAME_2 = re.compile('^domU(-[0-9a-fA-F]{2}){6}')
 
     for instance in instances:
-
         for specifier in specifiers:
 
             if re.match(RE_INSTANCE_ID, specifier):
@@ -40,6 +41,14 @@ def filter_instances(specifiers, instances):
 
             elif re.match(RE_PRIVATE_IP, specifier):
                 if instance.private_ip_address == specifier:
+                    targets.add(instance)
+
+            elif re.match(RE_PRIVATE_HOSTNAME_1, specifier):
+                if instance.private_dns_name.startswith(specifier):
+                    targets.add(instance)
+
+            elif re.match(RE_PRIVATE_HOSTNAME_2, specifier):
+                if instance.private_dns_name.startswith(specifier):
                     targets.add(instance)
 
             else:
