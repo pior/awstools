@@ -5,7 +5,10 @@ Changelog for Awstools
 0.3.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- ec2ssh: add instance private hostname matching
+- Move autoscale subcommands to a new cfnas command
+- ec2ssh: add bash completion helpers
+- Pylint
 
 
 0.3.4 (2013-07-04)
