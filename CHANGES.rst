@@ -2,7 +2,7 @@ Changelog for Awstools
 ======================
 
 
-0.3.5 (unreleased)
+0.3.5 (2013-10-10)
 ------------------
 
 - ec2ssh: add instance private hostname matching
