@@ -5,11 +5,8 @@
 # Author: Pior Bastida <pbastida@socialludia.com>
 
 import unittest
-from StringIO import StringIO
 
 import yaml
-
-from awstools import application
 
 multiyaml = """
 Application: appmodel
@@ -80,7 +77,7 @@ environments:
             InstanceType: c1.medium
 """
 
-data = yaml.load("""
+DATA = yaml.load("""
 Application: test
 ShortName: tt
 KeyName: keyname1
@@ -115,35 +112,40 @@ environments:
 class TestApplicationApplication(unittest.TestCase):
 
     def setUp(self):
-        self.app = application.Application(data)
+        from awstools import application
+
+        self.app = application.Application(DATA)
 
     def test_application_application_base(self):
         self.assertEqual(self.app.name,
-                         data['Application'])
+                         DATA['Application'])
         self.assertEqual(self.app.shortname,
-                         data['ShortName'])
+                         DATA['ShortName'])
         self.assertEqual(self.app.live,
-                         data['live'])
+                         DATA['live'])
         self.assertEqual(self.app.environments,
-                         data['environments'].keys())
+                         DATA['environments'].keys())
 
     def test_application_application_validate_str(self):
-        s = str(self.app)
-        for k, v in data.items():
-            if isinstance(v, str):
-                self.assertIn(k, s)
-                self.assertIn(v, s)
+        app_s = str(self.app)
+        for key, value in DATA.items():
+            if isinstance(value, str):
+                self.assertIn(key, app_s)
+                self.assertIn(value, app_s)
 
     def test_application_application_validate_ok(self):
         try:
             self.app.validate()
-        except Exception as e:
-            self.fail("validate() raised an exception for a valid ApplicationSettings\n"
-                      "Exception: \n%s" % e)
+        except Exception as error:
+            self.fail("validate() raised an exception for a valid "
+                      "ApplicationSettings\n"
+                      "Exception: \n%s" % error)
 
     def test_application_application_validate_nok(self):
+        from awstools import application
+
         for dropit in ['Application', 'ShortName', 'environments', 'live']:
-            testdata = data.copy()
+            testdata = DATA.copy()
             del testdata[dropit]
             app = application.Application(testdata)
 
@@ -151,14 +153,20 @@ class TestApplicationApplication(unittest.TestCase):
                 app.validate()
 
     def test_application_application_stackinfo_wrongapp(self):
+        from awstools import application
+
         with self.assertRaises(application.ApplicationError):
             self.app.get_stack_info_from_stackname('xx-python-production')
 
     def test_application_application_stackinfo_wrongenv(self):
+        from awstools import application
+
         with self.assertRaises(application.ApplicationEnvironmentNotFound):
             self.app.get_stack_info_from_stackname('tt-python-weirdenv')
 
     def test_application_application_stackinfo_wrongpool(self):
+        from awstools import application
+
         with self.assertRaises(application.ApplicationPoolNotFound):
             self.app.get_stack_info_from_stackname('tt-wrongpool-production')
 
@@ -173,7 +181,8 @@ class TestApplicationApplication(unittest.TestCase):
     def test_application_application_stackinfo_identifier_default(self):
         gsifs = self.app.get_stack_info_from_stackname
 
-        self.assertEqual(gsifs('tt-node-stage-notspecified')['ident'], 'default')
+        self.assertEqual(gsifs('tt-node-stage-notspecified')['ident'],
+                         'default')
 
     def test_application_application_stackinfo(self):
         sinfo = self.app.get_stack_info_from_stackname('tt-python-production')

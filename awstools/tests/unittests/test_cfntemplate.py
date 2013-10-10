@@ -11,7 +11,7 @@ import mock
 
 from awstools import cfntemplate
 
-cfntemplate_skeleton = """{
+CFNTEMPLATE_SKELETON = """{
     "AWSTemplateFormatVersion": "Version",
     "Description": "Description",
     "Parameters": {"Parameters": "Parameters"},
@@ -24,7 +24,9 @@ class TestCfnTemplate(unittest.TestCase):
     def test_cfntemplate_cfnparameters(self):
         template = mock.Mock()
         template.parameters = ['un', 'deux', 'trois']
-        stack_info = dict(zip(['zero', 'un', 'deux', 'trois', 'quatre', 'cinq'], range(6)))
+        stack_info = dict(zip(
+            ['zero', 'un', 'deux', 'trois', 'quatre', 'cinq'],
+            range(6)))
 
         result = [('un', 1), ('deux', 2), ('trois', 3)]
 
@@ -35,10 +37,10 @@ class TestCfnTemplate(unittest.TestCase):
 
         representation = repr(param)
 
-        for k, v in result:
+        for key, value in result:
             self.assertRegexpMatches(
-                representation, r'%s\s*=\s*%s' % (k, v),
-                msg="The representation is invalid for key %s" % k)
+                representation, r'%s\s*=\s*%s' % (key, value),
+                msg="The representation is invalid for key %s" % key)
 
     def test_cfntemplate_cfntemplate_open_error(self):
         with self.assertRaises(cfntemplate.ErrorCfnTemplateNotFound):
@@ -65,20 +67,20 @@ class TestCfnTemplate(unittest.TestCase):
         self.assertIsInstance(template.parameters, list)
 
         with self.assertRaises(KeyError):
-            template.resources
+            _ = template.resources
 
         with self.assertRaises(KeyError):
-            template.description
+            _ = template.description
 
         with self.assertRaises(KeyError):
-            template.version
+            _ = template.version
 
         self.assertIsInstance(template.outputs, list)
 
     @mock.patch('__builtin__.open')
     def test_cfntemplate_cfntemplate_skeleton(self, mock_open):
         mock_open.return_value = StringIO.StringIO(
-            cfntemplate_skeleton)
+            CFNTEMPLATE_SKELETON)
 
         template = cfntemplate.CfnTemplate('/skeleton')
         self.assertEquals(template.parameters, ['Parameters'])

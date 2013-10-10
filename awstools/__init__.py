@@ -8,12 +8,12 @@ import os
 from ConfigParser import ConfigParser
 
 
-_defaults = {}
+_DEFAULTS = {}
 
 
 def read_config(alternate_config=None):
     """Helper for the configuration"""
-    _config = ConfigParser(_defaults)
+    _config = ConfigParser(_DEFAULTS)
     if alternate_config:
         _config.read(os.path.expanduser(alternate_config))
     else:

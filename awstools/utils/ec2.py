@@ -24,13 +24,15 @@ def get_name(instance):
     return name or altname or instanceid
 
 
+
+RE_INSTANCE_ID = re.compile(r'^i-[a-fA-F0-9]{8}$')
+RE_PRIVATE_IP = re.compile(r'^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
+RE_PRIVATE_HOSTNAME_1 = re.compile(r'^ip-10(-\d{1,3}){3}')
+RE_PRIVATE_HOSTNAME_2 = re.compile(r'^domU(-[0-9a-fA-F]{2}){6}')
+
+
 def filter_instances(specifiers, instances):
     targets = set()
-
-    RE_INSTANCE_ID = re.compile('^i-[a-fA-F0-9]{8}$')
-    RE_PRIVATE_IP = re.compile('^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
-    RE_PRIVATE_HOSTNAME_1 = re.compile('^ip-10(-\d{1,3}){3}')
-    RE_PRIVATE_HOSTNAME_2 = re.compile('^domU(-[0-9a-fA-F]{2}){6}')
 
     for instance in instances:
         for specifier in specifiers:

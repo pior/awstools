@@ -57,8 +57,8 @@ class Application(object):
         for prop in ['name', 'shortname', 'environments', 'live']:
             try:
                 getattr(self, prop)
-            except KeyError as e:
-                raise ApplicationInvalid("Missing properties: %s" % e)
+            except KeyError as error:
+                raise ApplicationInvalid("Missing properties: %s" % error)
 
     def _prop(self, prop):
         if prop in self.properties:
@@ -97,7 +97,7 @@ class Application(object):
                                    pool=pool,
                                    identifier=identifier)
 
-    def get_stack_info(self, environment, pool, identifier=None, **kwargs):
+    def get_stack_info(self, environment, pool, identifier=None):
         if environment not in self.environments:
             raise ApplicationEnvironmentNotFound(
                 "No such environment: %s" % environment)
@@ -123,10 +123,9 @@ class Application(object):
         app_pool_prop = pools.get(pool)  # use default pool (without id)
 
         for pool_name, pool_props in pools.items():  # search matching id
-            match = re.match(pool + '\[(.+)\]', pool_name)
+            match = re.match(pool + r'\[(.+)\]', pool_name)
             if match:
-                identifiers = map(str.strip,
-                                  match.groups()[0].split(','))
+                identifiers = [s.strip() for s in match.groups()[0].split(',')]
                 if identifier in identifiers:
                     app_pool_prop = pool_props
                     break

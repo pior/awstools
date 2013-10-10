@@ -5,8 +5,9 @@
 # Author: Pior Bastida <pbastida@socialludia.com>
 
 import os
+import pkg_resources
 
-from argh import confirm
+from argh import (ArghParser, confirm)
 from argh.exceptions import CommandError
 
 import awstools
@@ -14,15 +15,12 @@ from awstools.application import Applications
 
 
 def get_base_parser():
-    import pkg_resources
-    from argh import ArghParser
-
-    HELP_CFG = "path of an alternative configuration file"
-    HELP_SETTINGS = "path of the application settings configuration file"
-
-    parser = ArghParser(version=pkg_resources.get_distribution("awstools").version)
-    parser.add_argument('--config', default=None, help=HELP_CFG)
-    parser.add_argument('--settings', default=None, help=HELP_SETTINGS)
+    dist = pkg_resources.get_distribution("awstools")
+    parser = ArghParser(version=dist.version)
+    parser.add_argument('--config', default=None,
+        help="path of an alternative configuration file")
+    parser.add_argument('--settings', default=None,
+        help="path of the application settings configuration file")
 
     return parser
 

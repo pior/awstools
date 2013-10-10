@@ -7,15 +7,10 @@
 import unittest
 
 import mock
-# import boto
-
 
 
 class Stack(object):
-    def __init__(self,
-                 name="test",
-                 status="CREATE_COMPLETE",
-                 ):
+    def __init__(self, name, status="CREATE_COMPLETE"):
         self.stack_name = name
         self.stack_status = status
 

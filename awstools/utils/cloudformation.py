@@ -8,6 +8,8 @@
 import boto
 
 
+STACK_IGNORE_STATUS = ["DELETE_COMPLETE"]
+
 def find_stacks(pattern=None, findall=False):
     """Return a list of stacks matching a pattern"""
 
@@ -15,9 +17,9 @@ def find_stacks(pattern=None, findall=False):
     stacks = []
     next_token = None
     while True:
-        rs = cfn.list_stacks(next_token=next_token)
-        stacks.extend(rs)
-        next_token = rs.next_token
+        result = cfn.list_stacks(next_token=next_token)
+        stacks.extend(result)
+        next_token = result.next_token
         if next_token is None:
             break
 
@@ -25,8 +27,8 @@ def find_stacks(pattern=None, findall=False):
         stacks = [s for s in stacks if pattern in s.stack_name]
 
     if not findall:
-        INVALID_STATUS = ["DELETE_COMPLETE"]
-        stacks = [s for s in stacks if s.stack_status not in INVALID_STATUS]
+        stacks = [s for s in stacks
+                  if s.stack_status not in STACK_IGNORE_STATUS]
 
     return sorted(stacks, key=lambda k: k.stack_name)
 

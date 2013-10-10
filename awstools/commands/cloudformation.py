@@ -55,6 +55,9 @@ def main():
 @alias('list')
 @wrap_errors([ValueError, BotoServerError])
 def ls(args):
+    """
+    list stacks
+    """
     stacks = find_stacks(args.stack_name, findall=args.all)
     for stack in stacks:
         yield format_stack_summary_short(stack)
@@ -64,6 +67,9 @@ def ls(args):
 @arg('--template', help=HELP_TMPL)
 @wrap_errors([ValueError, BotoServerError])
 def create(args):
+    """
+    create a stack
+    """
     config, settings, sinfo = initialize_from_cli(args)
 
     # Read template
@@ -89,11 +95,11 @@ def create(args):
             parameters=parameters,
             capabilities=['CAPABILITY_IAM'])
         print("StackId %s" % stackid)
-    except BotoServerError as e:
-        if e.error_message:
-            raise CommandError("BotoServerError: " + e.error_message)
+    except BotoServerError as error:
+        if error.error_message:
+            raise CommandError("BotoServerError: " + error.error_message)
         else:
-            raise e
+            raise error
 
 
 @arg('stack_name', help=HELP_SN)
@@ -101,6 +107,9 @@ def create(args):
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
 def update(args):
+    """
+    update a stack
+    """
     config, settings, sinfo = initialize_from_cli(args)
 
     # Read template
@@ -130,17 +139,20 @@ def update(args):
             parameters=parameters,
             capabilities=['CAPABILITY_IAM'])
         print("StackId %s" % stackid)
-    except BotoServerError as e:
-        if e.error_message:
-            raise CommandError("BotoServerError: " + e.error_message)
+    except BotoServerError as error:
+        if error.error_message:
+            raise CommandError("BotoServerError: " + error.error_message)
         else:
-            raise e
+            raise error
 
 
 @arg('stack_name', nargs='?', default='')
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
 def batch_update(args):
+    """
+    update a batch of stacks sequentially
+    """
     args.template = None
 
     stacks = find_stacks(args.stack_name)
@@ -163,6 +175,9 @@ def batch_update(args):
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
 def delete(args):
+    """
+    delete a stack
+    """
     config, settings, sinfo = initialize_from_cli(args)
 
     stack = find_one_stack(args.stack_name)
@@ -173,17 +188,20 @@ def delete(args):
 
     try:
         res = boto.connect_cloudformation().delete_stack(stack.stack_name)
-    except BotoServerError as e:
-        if e:
-            raise CommandError("BotoServerError: " + e.error_message)
+    except BotoServerError as error:
+        if error:
+            raise CommandError("BotoServerError: " + error.error_message)
         else:
-            raise e
+            raise error
     print("Result %s" % res)
 
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def info(args):
+    """
+    display information of a stack
+    """
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack) + '\n'
@@ -207,6 +225,9 @@ def info(args):
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def outputs(args):
+    """
+    display outputs of a stack
+    """
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack) + '\n'
@@ -218,6 +239,9 @@ def outputs(args):
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def resources(args):
+    """
+    display resources of a stack
+    """
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack) + '\n'
@@ -236,12 +260,18 @@ def resources(args):
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
 def events(args):
+    """
+    display events of a stack
+    """
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
     yield format_stack_events(stack) + '\n'
 
 
 def activities(args):
+    """
+    display global activity
+    """
     stacks = find_stacks(None, findall=True)
     for stack in stacks:
         if stack.stack_status.endswith('_COMPLETE'):

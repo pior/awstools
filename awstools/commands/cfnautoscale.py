@@ -168,12 +168,11 @@ def show_cfg(args):
     cfn = boto.connect_cloudformation()
 
     for stack in stacks:
-        # yield format_stack_summary_short(stack)
         yield "Stack %s" % stack.stack_name
 
-        s = cfn.describe_stacks(stack.stack_name)[0]
+        stack = cfn.describe_stacks(stack.stack_name)[0]
 
-        asg = find_one_resource(s, RES_TYPE_ASG)
+        asg = find_one_resource(stack, RES_TYPE_ASG)
         for instance in asg.instances:
             yield "  {i!r} LC:{i.launch_config_name}".format(i=instance)
 

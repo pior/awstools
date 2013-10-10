@@ -8,12 +8,12 @@ import unittest
 
 import boto
 
-import awstools.fabric
-
 
 class TestFabric(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        import awstools.fabric
+
         cls.roledefs = awstools.fabric.populate_roledefs()
 
         filters = {'instance-state-name': 'running'}
@@ -30,9 +30,9 @@ class TestFabric(unittest.TestCase):
         self.assertIsInstance(self.roledefs, dict)
 
     def test_contains_lists(self):
-        for k, v in self.roledefs.items():
-            self.assertIsInstance(k, unicode)
-            self.assertIsInstance(v, list)
+        for key, value in self.roledefs.items():
+            self.assertIsInstance(key, unicode)
+            self.assertIsInstance(value, list)
 
     def test_check_instance_name(self):
         for instance in self.instances:

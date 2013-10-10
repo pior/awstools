@@ -10,21 +10,22 @@ import StringIO
 import mock
 import argh
 
+
 class TestEc2ssh(unittest.TestCase):
 
     def setUp(self):
         self.stdout = StringIO.StringIO()
         self.stderr = StringIO.StringIO()
 
-        def _Ec2InstanceMock(i):
-            m = mock.Mock()
-            m.id = 'id-%s' % i
-            m.tags.get.return_value = 'name-%s' % i
-            m.public_dns_name = 'public-dns-%s' % i
-            m.private_dns_name = 'private-dns-%s' % i
-            m.state = 'running'
-            return m
-        self.instances = [_Ec2InstanceMock(i) for i in range(10)]
+        def get_ec2instance_mock(i):
+            ec2imock = mock.Mock()
+            ec2imock.id = 'id-%s' % i
+            ec2imock.tags.get.return_value = 'name-%s' % i
+            ec2imock.public_dns_name = 'public-dns-%s' % i
+            ec2imock.private_dns_name = 'private-dns-%s' % i
+            ec2imock.state = 'running'
+            return ec2imock
+        self.instances = [get_ec2instance_mock(i) for i in range(10)]
 
     def test_command_empty(self):
         from awstools.commands import ec2ssh

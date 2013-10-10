@@ -44,7 +44,7 @@ def connect(args):
             pass
 
     elif args.completion_script:
-        yield bash_completion_install_script
+        yield BASH_COMPLETION_INSTALL_SCRIPT
 
     elif args.list:
         instances = ec2.get_instances()
@@ -92,8 +92,8 @@ def connect(args):
             host = instances[0].public_dns_name
             try:
                 os.execvp('ssh', ['ec2ssh', host] + args.command)
-            except OSError as e:
-                raise Exception("Failed to call the ssh command: %s" % e)
+            except OSError as error:
+                raise Exception("Failed to call the ssh command: %s" % error)
         else:
             for instance in instances:
                 if args.verbose:
@@ -123,7 +123,7 @@ def read_completion_list():
         return json.load(fp)
 
 
-bash_completion_install_script = """
+BASH_COMPLETION_INSTALL_SCRIPT = """
 _ec2ssh()
 {
     local cur prev opts
