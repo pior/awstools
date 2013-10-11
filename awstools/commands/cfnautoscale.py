@@ -42,7 +42,8 @@ def main():
                          stop,
                          start,
                          migrate_cfg,
-                         show_cfg])
+                         show_cfg,
+                         metrics])
 
     parser.dispatch(completion=False)
 
@@ -53,6 +54,7 @@ def status(args):
     """
     List the status of the instances and ELB
     """
+
     stacks = find_stacks(args.stack_name)
 
     cfn = boto.connect_cloudformation()
@@ -267,3 +269,32 @@ def migrate_cfg(args):
             yield "\n <> ASG control restored."
     else:
         yield "WARNING: The ASG desired capacity was doubled!"
+
+
+@arg('stack_name', help=HELP_SN)
+@arg('--enable', default=False)
+@arg('--disable', default=False)
+@wrap_errors([ValueError, BotoServerError])
+def metrics(args):
+    """
+    Control the metrics collection activation
+    """
+    stack = find_one_stack(args.stack_name, summary=False)
+    yield format_stack_summary(stack) + '\n'
+
+    asg = find_one_resource(stack, RES_TYPE_ASG)
+    yield format_autoscale(asg)
+
+    if args.enable and args.disable:
+        raise CommandError("Option --enable and --disable are not compatible")
+    elif args.enable:
+        asg.connection.enable_metrics_collection(asg.name,
+            granularity='1Minute')
+        yield "Updated"
+    elif args.disable:
+        asg.connection.disable_metrics_collection(asg.name)
+        yield "Updated"
+    else:
+        yield "Metrics collection:"
+        for metric in asg.enabled_metrics:
+            yield "    %s" % metric
