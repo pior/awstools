@@ -15,9 +15,10 @@ epilog = """The 'instance' argument can be one or multiple specifiers
 separated by commas.
 
 valid specifiers:
-    Private IP:             12.34.567.89
-    Instance ID:            i-1a2b3c4d5e
     Tag Name (or altName):  tt-api-stage
+    Instance ID:            i-1a2b3c4d5e
+    Private IP:             12.34.567.89
+    Private DNS:            domU-12-45-56-AB-CD-EF
     Wildcard on tag Name:   tt-api-*"""
 
 

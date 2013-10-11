@@ -5,7 +5,8 @@ Changelog for Awstools
 0.3.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- update author email
+- cfnas: add subcommand metrics to control the ASG metrics collection
 
 
 0.3.5 (2013-10-10)
