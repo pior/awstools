@@ -2,7 +2,7 @@ Changelog for Awstools
 ======================
 
 
-0.3.7 (unreleased)
+0.3.7 (2013-12-17)
 ------------------
 
 - Fix wrong priority order when reading multiple configuration files
