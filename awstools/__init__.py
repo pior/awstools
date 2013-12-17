@@ -17,7 +17,7 @@ def read_config(alternate_config=None):
     if alternate_config:
         _config.read(os.path.expanduser(alternate_config))
     else:
-        _config.read(['awstools.cfg',
+        _config.read(['/etc/awstools.cfg',
                       os.path.expanduser('~/.awstools.cfg'),
-                      '/etc/awstools.cfg'])
+                      'awstools.cfg'])
     return _config
