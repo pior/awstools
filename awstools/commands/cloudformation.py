@@ -31,6 +31,7 @@ HELP_MIN = "AutoScaleGroup min constraint"
 HELP_MAX = "AutoScaleGroup max constraint"
 HELP_DESIRED = "AutoScaleGroup desired value"
 HELP_FORCE = "Don't ask for confirmation"
+HELP_FULL_LIST = "Display the full list"
 
 
 def main():
@@ -258,6 +259,7 @@ def resources(args):
 
 
 @arg('stack_name', help=HELP_SN)
+@arg('-a', '--all', default=False, help=HELP_FULL_LIST)
 @wrap_errors([ValueError, BotoServerError])
 def events(args):
     """
@@ -265,7 +267,10 @@ def events(args):
     """
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
-    yield format_stack_events(stack) + '\n'
+    if args.all:
+        yield format_stack_events(stack) + '\n'
+    else:
+        yield format_stack_events(stack, limit=20) + '\n'
 
 
 def activities(args):
