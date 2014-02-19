@@ -5,19 +5,31 @@
 # Author: Pior Bastida <pbastida@ludia.com>
 
 import boto
+import arrow
+from prettytable import PrettyTable
 
 from awstools.utils.cloudformation import (find_one_resource,
                                            RES_TYPE_ASG,
                                            RES_TYPE_ELB)
 
 
+def humanize_date(d):
+    return arrow.get(d).humanize()
 
+def local_date(d):
+    return arrow.get(d).to('local').format('YYYY-MM-DD HH:mm:ss')
+
+def long_date(d):
+    return "%s (%s)" % (
+        arrow.get(d).to('local').format('YYYY-MM-DD HH:mm:ss'),
+        arrow.get(d).humanize(),
+    )
 
 def format_stack_summary(stack):
     tmpl = "Name: {s.stack_name}\n"
     tmpl += "Id: {s.stack_id}\n"
-    tmpl += "Status: {s.stack_status}\n"
-    tmpl += "Creation : {s.creation_time}\n"
+    tmpl += "Status: {s.stack_status} \n"
+    tmpl += "Creation : {date}\n"
 
     if hasattr(stack, 'description'):
         tmpl += "Template: {s.description}"
@@ -25,36 +37,99 @@ def format_stack_summary(stack):
         tmpl += "Template: {s.template_description}"
     else:
         raise ValueError("Invalid Stack object")
-    return tmpl.format(s=stack)
+    return tmpl.format(s=stack, date=long_date(stack.creation_time))
 
 
-def format_stack_summary_short(stack):
-    tmpl = u"{s.stack_name:<26} {s.stack_status:<18} {s.creation_time}"
+def format_stacks(stacks):
+    tab = PrettyTable(['Name', 'Template', 'Status', 'Time'])
+    tab.align = 'l'
 
-    if hasattr(stack, 'description'):
-        tmpl += u" - {s.description}"
-    elif hasattr(stack, 'template_description'):
-        tmpl += u" - {s.template_description}"
-    else:
-        raise ValueError("Invalid Stack object")
-    return tmpl.format(s=stack)
+
+    for s in stacks:
+        tab.add_row([
+            s.stack_name,
+            s.template_description,
+            s.stack_status,
+            local_date(s.creation_time),
+        ])
+
+    return tab.get_string()
 
 
 def format_stack_events(stack, limit=None):
+    if hasattr(stack, 'describe_events'):
+        events = stack.describe_events()
+    else:
+        cfn = boto.connect_cloudformation()
+        events = cfn.describe_stack_events(stack.stack_name)
+
     cfn = boto.connect_cloudformation()
     events = list(cfn.describe_stack_events(stack.stack_name))
-    if limit:
-        events = events[0:limit]
 
-    def formatline(e):
-        f = "{time}  {etype:<40}  {logicalid:<24}  {status:<20}  {reason}"
-        return f.format(time=e.timestamp.isoformat().replace('T', ' '),
-                        status=e.resource_status,
-                        etype=e.resource_type,
-                        logicalid=e.logical_resource_id,
-                        reason=e.resource_status_reason)
+    if limit is None:
+        limit = len(events)
 
-    return "\n".join([formatline(e) for e in events])
+    tab = PrettyTable(['Time', 'Type', 'Logical ID', 'Status', 'Reason'])
+    tab.align = 'l'
+
+    for e in events:
+        reason = e.resource_status_reason
+
+        tab.add_row([local_date(e.timestamp),
+                    e.resource_type,
+                    e.logical_resource_id,
+                    e.resource_status,
+                    reason if reason is not None else ''])
+
+    return tab.get_string(end=limit)
+
+
+def format_stack_resources(stack):
+    if hasattr(stack, 'describe_resources'):
+        resources = stack.describe_resources()
+    else:
+        cfn = boto.connect_cloudformation()
+        resources = cfn.describe_stack_resources(stack.stack_name)
+
+    tab = PrettyTable(['Type', 'Status', 'Logical ID', 'Physical ID'])
+    tab.align = 'l'
+    tab.sortby = 'Type'
+
+    for r in resources:
+        if r.resource_type == 'AWS::CloudFormation::WaitConditionHandle':
+            physical_resource_id = r.physical_resource_id[0:45] + '...'
+        else:
+            physical_resource_id = r.physical_resource_id
+
+        tab.add_row([
+            r.resource_type,
+            r.resource_status,
+            r.logical_resource_id,
+            physical_resource_id])
+
+    return tab.get_string()
+
+
+def format_stack_outputs(stack):
+    tab = PrettyTable(['Key', 'Value', 'Description'])
+    tab.align = 'l'
+    tab.sortby = 'Key'
+
+    for o in stack.outputs:
+        tab.add_row([o.key, o.value, o.description])
+
+    return tab.get_string()
+
+
+def format_stack_parameters(stack):
+    tab = PrettyTable(['Key', 'Value'])
+    tab.align = 'l'
+    tab.sortby = 'Key'
+
+    for p in stack.parameters:
+        tab.add_row([p.key, p.value])
+
+    return tab.get_string()
 
 
 def format_autoscale(asg, detail=False):

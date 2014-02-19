@@ -42,15 +42,17 @@ setup(
         "argh",
         "PyYaml",
         "boto",
+        "arrow",
+        "prettytable",
     ],
     extras_require={ 'test': ['nose', 'nosexcover', 'coverage', 'mock'] },
     entry_points={
         'console_scripts': [
             'cfnas = awstools.commands.cfnautoscale:main',
+            'cfn = awstools.commands.cloudformation:main',
         ]
     },
     scripts=[
-        "scripts/cfn",
         "scripts/ec2ssh",
     ]
 )

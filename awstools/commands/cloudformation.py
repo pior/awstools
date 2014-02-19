@@ -12,8 +12,9 @@ from argh.exceptions import CommandError
 import boto
 from boto.exception import BotoServerError
 
-from awstools.display import (format_stack_summary,
-                              format_stack_summary_short,
+from awstools.display import (format_stack_summary, format_stack_outputs,
+                              format_stacks, format_stack_resources,
+                              format_stack_parameters,
                               format_stack_events)
 from awstools.utils.cloudformation import (find_stacks,
                                            find_one_stack)
@@ -44,6 +45,7 @@ def main():
                          delete,
                          info,
                          outputs,
+                         parameters,
                          resources,
                          events,
                          activities,])
@@ -60,8 +62,7 @@ def ls(args):
     list stacks
     """
     stacks = find_stacks(args.stack_name, findall=args.all)
-    for stack in stacks:
-        yield format_stack_summary_short(stack)
+    yield format_stacks(stacks)
 
 
 @arg('stack_name', help=HELP_SN)
@@ -157,8 +158,7 @@ def batch_update(args):
     args.template = None
 
     stacks = find_stacks(args.stack_name)
-    for stack in stacks:
-        yield format_stack_summary_short(stack)
+    yield format_stacks(stacks)
 
     confirm_action(arg, default=False)
 
@@ -205,22 +205,20 @@ def info(args):
     """
     stack = find_one_stack(args.stack_name, summary=False)
 
-    yield format_stack_summary(stack) + '\n'
-
-    for param in stack.parameters:
-        yield str(param)
+    yield format_stack_summary(stack)
     yield ''
 
-    for output in stack.outputs:
-        yield str(output)
+    yield format_stack_parameters(stack)
     yield ''
 
-    yield format_stack_events(stack, limit=10) + '\n'
-
-    for resource in stack.describe_resources():
-        yield "{r}\n  {r.resource_status} {r.physical_resource_id}".format(
-            r=resource)
+    yield format_stack_outputs(stack)
     yield ''
+
+    yield format_stack_events(stack, limit=10)
+    yield ''
+
+    yield format_stack_resources(stack)
+    yield '\n'
 
 
 @arg('stack_name', help=HELP_SN)
@@ -231,10 +229,24 @@ def outputs(args):
     """
     stack = find_one_stack(args.stack_name, summary=False)
 
-    yield format_stack_summary(stack) + '\n'
+    yield format_stack_summary(stack)
+    yield ''
 
-    for output in stack.outputs:
-        yield str(output)
+    yield format_stack_outputs(stack)
+
+
+@arg('stack_name', help=HELP_SN)
+@wrap_errors([ValueError, BotoServerError])
+def parameters(args):
+    """
+    display parameters of a stack
+    """
+    stack = find_one_stack(args.stack_name, summary=False)
+
+    yield format_stack_summary(stack)
+    yield ''
+
+    yield format_stack_parameters(stack)
 
 
 @arg('stack_name', help=HELP_SN)
@@ -245,17 +257,12 @@ def resources(args):
     """
     stack = find_one_stack(args.stack_name, summary=False)
 
-    yield format_stack_summary(stack) + '\n'
-
-    tmpl = "  ".join([
-                     "{r.logical_resource_id:<24}",
-                     "{r.physical_resource_id:<60}",
-                     "[{r.resource_status}] {r.resource_type}"
-                     ])
-
-    for resource in stack.describe_resources():
-        yield tmpl.format(r=resource)
+    yield format_stack_summary(stack)
     yield ''
+
+    yield format_stack_resources(stack)
+    yield ''
+
 
 
 @arg('stack_name', help=HELP_SN)
@@ -268,9 +275,10 @@ def events(args):
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
     if args.all:
-        yield format_stack_events(stack) + '\n'
+        yield format_stack_events(stack)
     else:
-        yield format_stack_events(stack, limit=20) + '\n'
+        yield format_stack_events(stack, limit=20)
+    yield ''
 
 
 def activities(args):
@@ -278,9 +286,6 @@ def activities(args):
     display global activity
     """
     stacks = find_stacks(None, findall=True)
-    for stack in stacks:
-        if stack.stack_status.endswith('_COMPLETE'):
-            continue
-        yield format_stack_summary_short(stack)
-
-
+    stacks = [s for s in stacks if not s.stack_status.endswith('_COMPLETE')]
+    yield format_stacks(stacks)
+    yield ''
