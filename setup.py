@@ -39,7 +39,7 @@ setup(
     # include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "argh",
+        "argh==0.19.0",
         "PyYaml",
         "boto",
         "arrow",
