@@ -16,14 +16,19 @@ from awstools.utils.cloudformation import (find_one_resource,
 def humanize_date(d):
     return arrow.get(d).humanize()
 
+
 def local_date(d):
+    if d is None:
+        return '-'
     return arrow.get(d).to('local').format('YYYY-MM-DD HH:mm:ss')
+
 
 def long_date(d):
     return "%s (%s)" % (
         arrow.get(d).to('local').format('YYYY-MM-DD HH:mm:ss'),
         arrow.get(d).humanize(),
     )
+
 
 def format_stack_summary(stack):
     tmpl = "Name: {s.stack_name}\n"
@@ -41,9 +46,8 @@ def format_stack_summary(stack):
 
 
 def format_stacks(stacks):
-    tab = PrettyTable(['Name', 'Template', 'Status', 'Time'])
+    tab = PrettyTable(['Name', 'Template', 'Status', 'Creation'])
     tab.align = 'l'
-
 
     for s in stacks:
         tab.add_row([
