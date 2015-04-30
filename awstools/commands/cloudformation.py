@@ -84,6 +84,7 @@ def create(args):
         'Name': args.stack_name,
         'Application': sinfo['Application'],
         'Environment': sinfo['Environment'],
+        'Type': sinfo['Type'],
     }
 
     print("\nStack name: {args.stack_name}\n"
