@@ -2,7 +2,7 @@ Changelog for Awstools
 ======================
 
 
-0.3.9 (unreleased)
+0.3.9 (2015-04-30)
 ------------------
 
 - Nothing changed yet.

@@ -7,7 +7,7 @@
 from setuptools import setup, find_packages
 import codecs
 
-version = '0.3.9.dev0'
+version = '0.3.9'
 
 
 def read(filename):
@@ -45,7 +45,9 @@ setup(
         "arrow",
         "prettytable",
     ],
-    extras_require={ 'test': ['nose', 'nosexcover', 'coverage', 'mock'] },
+    extras_require={
+        'test': ['nose', 'nosexcover', 'coverage', 'mock', 'zest.releaser'],
+        },
     entry_points={
         'console_scripts': [
             'cfnas = awstools.commands.cfnautoscale:main',
