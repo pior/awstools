@@ -80,13 +80,19 @@ def create(args):
         args.template if args.template else sinfo['template'])
     template = cfntemplate.CfnTemplate(template_path)
     parameters = cfntemplate.CfnParameters(template, sinfo)
+    tags = {
+        'Name': args.stack_name,
+        'Application': sinfo['Application'],
+        'Environment': sinfo['Environment'],
+    }
 
     print("\nStack name: {args.stack_name}\n"
           "\nTemplate: {template!r}\n"
-          "\nParameters:\n"
-          "{parameters!r}\n".format(args=args,
-                                    template=template,
-                                    parameters=parameters))
+          "\nTags: {tags!r}\n"
+          "\nParameters:\n{parameters!r}\n".format(args=args,
+                                                   template=template,
+                                                   parameters=parameters,
+                                                   tags=tags))
 
     confirm_action(arg, default=True)
 
@@ -95,6 +101,7 @@ def create(args):
             args.stack_name,
             template_body=template.body,
             parameters=parameters,
+            tags=tags,
             capabilities=['CAPABILITY_IAM'])
         print("StackId %s" % stackid)
     except BotoServerError as error:
