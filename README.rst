@@ -1,6 +1,6 @@
-=====================================
- AWSTOOLS - high level tools for AWS
-=====================================
+===================================
+AWSTOOLS - high level tools for AWS
+===================================
 
 AWSTOOLS is a Python package that provide modules and commands to manage an
 infrastructure on `Amazon Web Services <http://aws.amazon.com>`_.
@@ -38,14 +38,12 @@ At the moment awstools supports:
      fab -R App-Role cmd_run_on_all_app-role-*_instances
 
 
-
 Installation
 ============
 
-Python requirements:
- - argh
- - boto
- - PyYaml
+::
+
+   pip install awstools
 
 
 Configuration
@@ -80,8 +78,8 @@ Run the test with nose
    nosetests
 
 
-Examples
-========
+Usage
+=====
 
 Command ec2ssh
 --------------
@@ -181,6 +179,6 @@ Contribute
 Want to contribute, report a but of request a feature ? The development goes on
 at Ludia's BitBucket account:
 
-- **Report bugs**: https://bitbucket.org/pior/awstools/issues
-- **Fork the code**: https://bitbucket.org/pior/awstools
+- **Report bugs**: https://github.com/ludia/awstools/issues
+- **Fork awstools**: https://github.com/ludia/awstools
 - **Download**: http://pypi.python.org/pypi/awstools

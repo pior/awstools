@@ -32,10 +32,10 @@ setup(
     ],
     keywords='',
     author='Pior Bastida',
-    author_email='pior@pbastida.net',
-    url='https://bitbucket.org/pior/awstools',
+    author_email='pbastida@ludia.com',
+    url='https://github.com/ludia/awstools',
     license='GPL',
-    packages=find_packages(exclude=["awstools.costreport"]),
+    packages=find_packages(),
     # include_package_data=True,
     zip_safe=False,
     install_requires=[
