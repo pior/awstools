@@ -6,7 +6,7 @@
 
 from time import sleep
 
-from argh import arg, confirm, wrap_errors
+from argh import arg, confirm, wrap_errors, expects_obj
 from argh.exceptions import CommandError
 
 import boto
@@ -50,6 +50,7 @@ def main():
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def status(args):
     """
     List the status of the instances and ELB
@@ -71,6 +72,7 @@ def status(args):
 @arg('desired', nargs='?', help=HELP_DESIRED)
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def control(args):
     """
     Control the stack: update the AutoScaleGroup constraints
@@ -103,6 +105,7 @@ def control(args):
 @arg('stack_name', help=HELP_SN)
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def stop(args):
     """
     Stop the stack: force the AutoScale to shut all instances down
@@ -131,6 +134,7 @@ def stop(args):
 @arg('stack_name', help=HELP_SN)
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def start(args):
     """
     Start the stack: set AutoScale control to configured values
@@ -161,6 +165,7 @@ def start(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def show_cfg(args):
     """
     List the instance with AutoScale launch config
@@ -182,6 +187,7 @@ def show_cfg(args):
 @arg('stack_name', help=HELP_SN)
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def migrate_cfg(args):
     """
     Migrate the stack: re-instantiate all instances
@@ -197,7 +203,6 @@ def migrate_cfg(args):
     orig_max = asg.max_size
     orig_desired = asg.desired_capacity
     orig_term_pol = asg.termination_policies
-    orig_instances = asg.instances
 
     mig_min = orig_desired * 2
     mig_max = orig_desired * 2
@@ -275,6 +280,7 @@ def migrate_cfg(args):
 @arg('--enable', default=False)
 @arg('--disable', default=False)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def metrics(args):
     """
     Control the metrics collection activation

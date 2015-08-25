@@ -6,7 +6,7 @@
 
 import os
 
-from argh import arg, alias, confirm, wrap_errors
+from argh import arg, named, confirm, wrap_errors, expects_obj
 from argh.exceptions import CommandError
 
 import boto
@@ -55,8 +55,9 @@ def main():
 
 @arg('-a', '--all', default=False)
 @arg('stack_name', nargs='?', default='')
-@alias('list')
+@named('list')
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def ls(args):
     """
     list stacks
@@ -68,6 +69,7 @@ def ls(args):
 @arg('stack_name', help=HELP_SN)
 @arg('--template', help=HELP_TMPL)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def create(args):
     """
     create a stack
@@ -116,6 +118,7 @@ def create(args):
 @arg('--template', help=HELP_TMPL)
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def update(args):
     """
     update a stack
@@ -159,6 +162,7 @@ def update(args):
 @arg('stack_name', nargs='?', default='')
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def batch_update(args):
     """
     update a batch of stacks sequentially
@@ -183,6 +187,7 @@ def batch_update(args):
 @arg('stack_name', help=HELP_SN)
 @arg('-f', '--force', default=False, help=HELP_FORCE)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def delete(args):
     """
     delete a stack
@@ -207,6 +212,7 @@ def delete(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def info(args):
     """
     display information of a stack
@@ -231,6 +237,7 @@ def info(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def outputs(args):
     """
     display outputs of a stack
@@ -245,6 +252,7 @@ def outputs(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def parameters(args):
     """
     display parameters of a stack
@@ -259,6 +267,7 @@ def parameters(args):
 
 @arg('stack_name', help=HELP_SN)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def resources(args):
     """
     display resources of a stack
@@ -276,6 +285,7 @@ def resources(args):
 @arg('stack_name', help=HELP_SN)
 @arg('-a', '--all', default=False, help=HELP_FULL_LIST)
 @wrap_errors([ValueError, BotoServerError])
+@expects_obj
 def events(args):
     """
     display events of a stack

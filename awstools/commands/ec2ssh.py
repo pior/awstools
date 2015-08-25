@@ -34,6 +34,7 @@ HELP_COMPLETION = "Output a script to setup bash completion"
 @argh.arg('-1', '--one', default=False, help=HELP_ONE)
 @argh.arg('--completion-list', default=False)
 @argh.arg('--completion-script', default=False, help=HELP_COMPLETION)
+@argh.expects_obj
 def connect(args):
     """SSH to multiple EC2 instances by name, instance-id or private ip"""
 
