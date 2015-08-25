@@ -1,7 +1,7 @@
 import os
 import pkg_resources
 
-from argh import (ArghParser, confirm)
+from argh import ArghParser, confirm
 from argh.exceptions import CommandError
 
 import awstools
@@ -24,9 +24,7 @@ def get_base_parser():
 
 
 def initialize_from_cli(args):
-    """
-    Read the configuration and settings file and lookup for a stack_info"""
-
+    """Read the configuration and settings file and lookup for a stack_info."""
     config = awstools.read_config(args.config)
 
     if args.settings:

@@ -7,21 +7,18 @@ from awstools.utils.cloudformation import (find_one_resource,
                                            RES_TYPE_ELB)
 
 
-def humanize_date(d):
-    return arrow.get(d).humanize()
+def humanize_date(date):
+    return arrow.get(date).humanize()
 
 
-def local_date(d):
-    if d is None:
+def local_date(date):
+    if date is None:
         return '-'
-    return arrow.get(d).to('local').format('YYYY-MM-DD HH:mm:ss')
+    return arrow.get(date).to('local').format('YYYY-MM-DD HH:mm:ss')
 
 
-def long_date(d):
-    return "%s (%s)" % (
-        arrow.get(d).to('local').format('YYYY-MM-DD HH:mm:ss'),
-        arrow.get(d).humanize(),
-    )
+def long_date(date):
+    return "%s (%s)" % (local_date(date), humanize_date(date))
 
 
 def format_stack_summary(stack):
@@ -49,7 +46,7 @@ def format_stacks(stacks):
             s.template_description,
             s.stack_status,
             local_date(s.creation_time),
-        ])
+            ])
 
     return tab.get_string()
 
@@ -73,11 +70,13 @@ def format_stack_events(stack, limit=None):
     for e in events:
         reason = e.resource_status_reason
 
-        tab.add_row([local_date(e.timestamp),
-                    e.resource_type,
-                    e.logical_resource_id,
-                    e.resource_status,
-                    reason if reason is not None else ''])
+        tab.add_row([
+            local_date(e.timestamp),
+            e.resource_type,
+            e.logical_resource_id,
+            e.resource_status,
+            reason if reason is not None else ''
+            ])
 
     return tab.get_string(end=limit)
 
@@ -103,7 +102,8 @@ def format_stack_resources(stack):
             r.resource_type,
             r.resource_status,
             r.logical_resource_id,
-            physical_resource_id])
+            physical_resource_id
+            ])
 
     return tab.get_string()
 

@@ -26,6 +26,7 @@ class ApplicationPoolNotFound(ApplicationNotFound):
 
 
 class Application(object):
+
     """Represents the properties of an application.
 
     (direct and inherited from a model).

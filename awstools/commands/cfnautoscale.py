@@ -46,10 +46,7 @@ def main():
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def status(args):
-    """
-    List the status of the instances and ELB
-    """
-
+    """List the status of the instances and ELB."""
     stacks = find_stacks(args.stack_name)
 
     cfn = boto.connect_cloudformation()
@@ -68,9 +65,7 @@ def status(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def control(args):
-    """
-    Control the stack: update the AutoScaleGroup constraints
-    """
+    """Control the stack: update the AutoScaleGroup constraints."""
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
@@ -101,9 +96,7 @@ def control(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def stop(args):
-    """
-    Stop the stack: force the AutoScale to shut all instances down
-    """
+    """Stop the stack: force the AutoScale to shut all instances down."""
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack)
@@ -130,9 +123,7 @@ def stop(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def start(args):
-    """
-    Start the stack: set AutoScale control to configured values
-    """
+    """Start the stack: set AutoScale control to configured values."""
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
     print(format_stack_summary(stack))
@@ -161,9 +152,7 @@ def start(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def show_cfg(args):
-    """
-    List the instance with AutoScale launch config
-    """
+    """List the instance with AutoScale launch config."""
     stacks = find_stacks(args.stack_name)
 
     cfn = boto.connect_cloudformation()
@@ -183,9 +172,7 @@ def show_cfg(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def migrate_cfg(args):
-    """
-    Migrate the stack: re-instantiate all instances
-    """
+    """Migrate the stack: re-instantiate all instances."""
     config, settings, sinfo = initialize_from_cli(args)
     stack = find_one_stack(args.stack_name, summary=False)
     print(format_stack_summary(stack))
@@ -276,9 +263,7 @@ def migrate_cfg(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def metrics(args):
-    """
-    Control the metrics collection activation
-    """
+    """Control the metrics collection activation."""
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
 

@@ -6,7 +6,7 @@ _DEFAULTS = {}
 
 
 def read_config(alternate_config=None):
-    """Helper for the configuration"""
+    """Helper for the configuration."""
     _config = ConfigParser(_DEFAULTS)
     if alternate_config:
         _config.read(os.path.expanduser(alternate_config))
