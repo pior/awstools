@@ -19,7 +19,7 @@ class TestDisplay(unittest.TestCase):
         stack = boto.cloudformation.stack.StackSummary()
         stack.stack_name = "stack_name"
         stack.stack_status = "stack_status"
-        stack.creation_time = "creation_time"
+        stack.creation_time = datetime.datetime.fromtimestamp(0)
         stack.template_description = "template_description"
 
         stacksummary = boto.cloudformation.stack.Stack()
@@ -31,41 +31,40 @@ class TestDisplay(unittest.TestCase):
         fmt = display.format_stack_summary(stack)
         self.assertIn('stack_name', fmt)
         self.assertIn('stack_status', fmt)
-        self.assertIn('creation_time', fmt)
+        self.assertIn('1969-12-31 14:00:00', fmt)
         self.assertIn('template_description', fmt)
 
         fmt = display.format_stack_summary_short(stack)
         self.assertIn('stack_name', fmt)
         self.assertIn('stack_status', fmt)
-        self.assertIn('creation_time', fmt)
+        self.assertIn('1969-12-31 14:00:00', fmt)
         self.assertIn('template_description', fmt)
 
         fmt = display.format_stack_summary(stacksummary)
         self.assertIn('stack_name', fmt)
         self.assertIn('stack_status', fmt)
-        self.assertIn('creation_time', fmt)
+        self.assertIn('1969-12-31 14:00:00', fmt)
         self.assertIn('template_description', fmt)
 
         fmt = display.format_stack_summary_short(stacksummary)
         self.assertIn('stack_name', fmt)
         self.assertIn('stack_status', fmt)
-        self.assertIn('creation_time', fmt)
+        self.assertIn('1969-12-31 14:00:00', fmt)
         self.assertIn('template_description', fmt)
 
     @mock.patch('boto.connect_cloudformation')
     def test_format_stack_events(self, mock_cfn):
         stack = mock.MagicMock(stack_name="stack_name")
+        stack.creation_time = datetime.datetime.fromtimestamp(0)
 
         event = mock.Mock(
-            timestamp=datetime.datetime.min,
+            timestamp=datetime.datetime.fromtimestamp(0),
             resource_status='resource_status',
             resource_type='resource_type',
             logical_resource_id='logical_resource_id',
             resource_status_reason='resource_status_reason')
 
-        mock_cfn.return_value = mock.MagicMock(
-            describe_stack_events=lambda x: [event]
-        )
+        mock_cfn.return_value.describe_stack_events.return_value = [event]
 
         fmt = display.format_stack_events(stack)
 

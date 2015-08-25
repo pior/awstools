@@ -1,5 +1,6 @@
 import unittest
 import StringIO
+import datetime
 
 import argh
 
@@ -39,7 +40,7 @@ class TestCfnAs(unittest.TestCase):
                               completion=False,
                               )
 
-        m_format.assert_has_called([mock.call(s) for s in stacks])
+        m_format.assert_has_calls([mock.call(s) for s in stacks])
 
         for stack in stacks:
             self.assertIn(str(stack), self.stdout.getvalue())
@@ -86,7 +87,8 @@ class TestCfnAs(unittest.TestCase):
         from awstools.commands import cfnautoscale
         from awstools.utils.cloudformation import RES_TYPE_ASG
 
-        stack = mock.Mock(stack_name='test_stack_name_1')
+        stack = mock.Mock(stack_name='test_stack_name_1',
+                          creation_time=datetime.datetime.utcnow())
 
         resource = mock.Mock(enabled_metrics=['metric1', 'metric2'])
 

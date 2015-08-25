@@ -25,7 +25,7 @@ def format_stack_summary(stack):
     tmpl = "Name: {s.stack_name}\n"
     tmpl += "Id: {s.stack_id}\n"
     tmpl += "Status: {s.stack_status} \n"
-    tmpl += "Creation : {date}\n"
+    tmpl += "Creation: {date}\n"
 
     if hasattr(stack, 'description'):
         tmpl += "Template: {s.description}"
@@ -93,6 +93,7 @@ def format_stack_resources(stack):
     tab.sortby = 'Type'
 
     for r in resources:
+        # TODO: generalize this
         if r.resource_type == 'AWS::CloudFormation::WaitConditionHandle':
             physical_resource_id = r.physical_resource_id[0:45] + '...'
         else:
