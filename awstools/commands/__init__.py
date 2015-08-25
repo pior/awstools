@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2015 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
 import os
 import pkg_resources
 
@@ -17,9 +11,13 @@ from awstools.application import Applications
 def get_base_parser():
     dist = pkg_resources.get_distribution("awstools")
     parser = ArghParser(version=dist.version)
-    parser.add_argument('--config', default=None,
+    parser.add_argument(
+        '--config',
+        default=None,
         help="path of an alternative configuration file")
-    parser.add_argument('--settings', default=None,
+    parser.add_argument(
+        '--settings',
+        default=None,
         help="path of the application settings configuration file")
 
     return parser

@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
 import os
 
 from argh import arg, named, confirm, wrap_errors, expects_obj
@@ -25,8 +19,8 @@ from awstools.commands import (get_base_parser,
 from awstools import cfntemplate
 
 
-HELP_SN = "the name of the stack like tt-python-production"
-HELP_TMPL = "force a different template file"
+HELP_SN = "The name of the stack like tt-python-production"
+HELP_TMPL = "Force a different template file"
 HELP_CAP = "AutoScale desired capacity"
 HELP_MIN = "AutoScaleGroup min constraint"
 HELP_MAX = "AutoScaleGroup max constraint"
@@ -48,7 +42,7 @@ def main():
                          parameters,
                          resources,
                          events,
-                         activities,])
+                         activities])
 
     parser.dispatch(completion=False)
 
@@ -59,9 +53,7 @@ def main():
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def ls(args):
-    """
-    list stacks
-    """
+    """List stacks."""
     stacks = find_stacks(args.stack_name, findall=args.all)
     yield format_stacks(stacks)
 
@@ -71,9 +63,7 @@ def ls(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def create(args):
-    """
-    create a stack
-    """
+    """Create a stack."""
     config, settings, sinfo = initialize_from_cli(args)
 
     # Read template
@@ -120,9 +110,7 @@ def create(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def update(args):
-    """
-    update a stack
-    """
+    """Update a stack."""
     config, settings, sinfo = initialize_from_cli(args)
 
     # Read template
@@ -164,9 +152,7 @@ def update(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def batch_update(args):
-    """
-    update a batch of stacks sequentially
-    """
+    """Update a batch of stacks sequentially."""
     args.template = None
 
     stacks = find_stacks(args.stack_name)
@@ -189,9 +175,7 @@ def batch_update(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def delete(args):
-    """
-    delete a stack
-    """
+    """Delete a stack."""
     config, settings, sinfo = initialize_from_cli(args)
 
     stack = find_one_stack(args.stack_name)
@@ -214,9 +198,7 @@ def delete(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def info(args):
-    """
-    display information of a stack
-    """
+    """Display information of a stack."""
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack)
@@ -239,9 +221,7 @@ def info(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def outputs(args):
-    """
-    display outputs of a stack
-    """
+    """Display outputs of a stack."""
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack)
@@ -254,9 +234,7 @@ def outputs(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def parameters(args):
-    """
-    display parameters of a stack
-    """
+    """Display parameters of a stack."""
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack)
@@ -269,9 +247,7 @@ def parameters(args):
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def resources(args):
-    """
-    display resources of a stack
-    """
+    """Display resources of a stack."""
     stack = find_one_stack(args.stack_name, summary=False)
 
     yield format_stack_summary(stack)
@@ -281,15 +257,12 @@ def resources(args):
     yield ''
 
 
-
 @arg('stack_name', help=HELP_SN)
 @arg('-a', '--all', default=False, help=HELP_FULL_LIST)
 @wrap_errors([ValueError, BotoServerError])
 @expects_obj
 def events(args):
-    """
-    display events of a stack
-    """
+    """Display events of a stack."""
     stack = find_one_stack(args.stack_name, summary=False)
     yield format_stack_summary(stack) + '\n'
     if args.all:
@@ -300,9 +273,7 @@ def events(args):
 
 
 def activities(args):
-    """
-    display global activity
-    """
+    """Display global activity."""
     stacks = find_stacks(None, findall=True)
     stacks = [s for s in stacks if not s.stack_status.endswith('_COMPLETE')]
     yield format_stacks(stacks)

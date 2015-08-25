@@ -74,7 +74,7 @@ class TestApplicationsLoading(unittest.TestCase):
             self.fail("Failed to instanciate: %s" % error)
 
     def test_instantiate(self):
-        _ = str(self.apps)
+        str(self.apps)
 
     def test_load_from_yaml_valid(self):
         try:

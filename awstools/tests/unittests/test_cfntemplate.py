@@ -57,7 +57,9 @@ class TestCfnTemplate(unittest.TestCase):
 
     @mock.patch('__builtin__.open', create=True)
     @mock.patch('json.loads')
-    def test_cfntemplate_cfntemplate_open_missing_keys(self, json_loads, mock_open):
+    def test_cfntemplate_cfntemplate_open_missing_keys(self,
+                                                       json_loads,
+                                                       mock_open):
         mock_open.return_value = mock.MagicMock(spec=file)
         mock_open.return_value.read.return_value = '{{'
         json_loads.return_value = {}
@@ -67,13 +69,13 @@ class TestCfnTemplate(unittest.TestCase):
         self.assertIsInstance(template.parameters, list)
 
         with self.assertRaises(KeyError):
-            _ = template.resources
+            template.resources
 
         with self.assertRaises(KeyError):
-            _ = template.description
+            template.description
 
         with self.assertRaises(KeyError):
-            _ = template.version
+            template.version
 
         self.assertIsInstance(template.outputs, list)
 

@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2015 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
 import unittest
 import StringIO
 
@@ -55,15 +49,18 @@ class TestCfnAs(unittest.TestCase):
     @mock.patch('awstools.commands.cfnautoscale.find_one_resource')
     def test_command_show_cfg(self, m_find_one_r, m_find_stacks, m_c_cfn):
         from awstools.commands import cfnautoscale
-        from awstools.utils.cloudformation import RES_TYPE_ASG
 
-        stacks = [mock.Mock(stack_name='test_stack_name_1'),
-                  mock.Mock(stack_name='test_stack_name_2'),
-                  mock.Mock(stack_name='test_stack_name_3')]
+        stacks = [
+            mock.Mock(stack_name='test_stack_name_1'),
+            mock.Mock(stack_name='test_stack_name_2'),
+            mock.Mock(stack_name='test_stack_name_3')
+            ]
 
-        resources = [mock.Mock(instances=[mock.Mock(launch_config_name='lc1')]),
-                     mock.Mock(instances=[mock.Mock(launch_config_name='lc2')]),
-                     mock.Mock(instances=[mock.Mock(launch_config_name='lc3')])]
+        resources = [
+            mock.Mock(instances=[mock.Mock(launch_config_name='lc1')]),
+            mock.Mock(instances=[mock.Mock(launch_config_name='lc2')]),
+            mock.Mock(instances=[mock.Mock(launch_config_name='lc3')])
+            ]
 
         m_find_stacks.return_value = stacks
         m_c_cfn.return_value.describe_stacks.side_effect = zip(stacks)
@@ -74,8 +71,7 @@ class TestCfnAs(unittest.TestCase):
                               argv=['testpattern'],
                               output_file=self.stdout,
                               errors_file=self.stderr,
-                              completion=False,
-                              )
+                              completion=False)
 
         for stack in stacks:
             self.assertIn(stack.stack_name, self.stdout.getvalue())
@@ -101,8 +97,7 @@ class TestCfnAs(unittest.TestCase):
                               argv=['testpattern'],
                               output_file=self.stdout,
                               errors_file=self.stderr,
-                              completion=False,
-                              )
+                              completion=False)
 
         m_find_one_s.assert_called_with('testpattern', summary=False)
 

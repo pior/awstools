@@ -24,7 +24,6 @@ def get_name(instance):
     return name or altname or instanceid
 
 
-
 RE_INSTANCE_ID = re.compile(r'^i-[a-fA-F0-9]{8}$')
 RE_PRIVATE_IP = re.compile(r'^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
 RE_PRIVATE_HOSTNAME_1 = re.compile(r'^ip-10(-\d{1,3}){3}')

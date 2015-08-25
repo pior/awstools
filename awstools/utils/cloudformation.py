@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2015 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
-
 import boto
 
 
 STACK_IGNORE_STATUS = ["DELETE_COMPLETE"]
 
-def find_stacks(pattern=None, findall=False):
-    """Return a list of stacks matching a pattern"""
 
+def find_stacks(pattern=None, findall=False):
+    """Return a list of stacks matching a pattern."""
     cfn = boto.connect_cloudformation()
     stacks = []
     next_token = None
@@ -34,7 +27,7 @@ def find_stacks(pattern=None, findall=False):
 
 
 def find_one_stack(pattern, findall=False, summary=True):
-    """Return the result is there is only one. Raise ValueError otherwise"""
+    """Return the result is there is only one. Raise ValueError otherwise."""
     stacks = find_stacks(pattern=pattern, findall=findall)
 
     for stack in stacks:        # If we have an exact match, just take it

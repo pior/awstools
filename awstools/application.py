@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2015 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
 import collections
 import pprint
 import re
@@ -32,9 +26,9 @@ class ApplicationPoolNotFound(ApplicationNotFound):
 
 
 class Application(object):
-    """
-    Represents the properties of an application (direct and inherited from
-    a model).
+    """Represents the properties of an application.
+
+    (direct and inherited from a model).
     """
 
     def __init__(self, properties):
@@ -146,9 +140,9 @@ class Application(object):
 
 
 class Applications(collections.Set):
-    """
-    Collection of Application
-    """
+
+    """Collection of Application."""
+
     def __init__(self, yamldata=None):
         self._apps = []
         if yamldata:
@@ -167,9 +161,7 @@ class Applications(collections.Set):
         return pprint.pformat(self._apps)
 
     def load_from_yaml(self, yamldata):
-        """
-        Load a set of Application definition from multiple document yaml stream
-        """
+        """Load from a multiple documents yaml stream."""
         docs = yaml.load_all(yamldata)
 
         self._apps = [Application(d) for d in docs]
@@ -179,8 +171,8 @@ class Applications(collections.Set):
             app.validate()
 
     def get(self, name=None, shortname=None, stackname=None):
-        """
-        Return the first matching Application.
+        """Return the first matching Application.
+
         Only compare the name or shortname even when matching with a stackname
         """
         if stackname:

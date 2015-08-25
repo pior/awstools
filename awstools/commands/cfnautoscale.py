@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
 from time import sleep
 
 from argh import arg, confirm, wrap_errors, expects_obj
@@ -295,7 +289,7 @@ def metrics(args):
         raise CommandError("Option --enable and --disable are not compatible")
     elif args.enable:
         asg.connection.enable_metrics_collection(asg.name,
-            granularity='1Minute')
+                                                 granularity='1Minute')
         yield "Updated"
     elif args.disable:
         asg.connection.disable_metrics_collection(asg.name)

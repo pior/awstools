@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2013 Ludia Inc.
-# This software is licensed as described in the file LICENSE, which
-# you should have received as part of this distribution.
-# Author: Pior Bastida <pbastida@ludia.com>
-
 import os
 import json
 import subprocess
@@ -24,7 +18,6 @@ HELP_COMPLETION = "Helper for completion (list eventually uptodate)"
 HELP_COMPLETION = "Output a script to setup bash completion"
 
 
-
 @argh.arg('instance', default=None, nargs='?', help=HELP_INSTANCE)
 @argh.arg('command', default=None, nargs='*', help=HELP_COMMAND)
 @argh.arg('-l', '--list', default=False, help=HELP_LIST)
@@ -36,8 +29,7 @@ HELP_COMPLETION = "Output a script to setup bash completion"
 @argh.arg('--completion-script', default=False, help=HELP_COMPLETION)
 @argh.expects_obj
 def connect(args):
-    """SSH to multiple EC2 instances by name, instance-id or private ip"""
-
+    """SSH to multiple EC2 instances by name, instance-id or private ip."""
     if args.completion_list:
         try:
             yield " ".join(read_completion_list())
@@ -135,7 +127,8 @@ _ec2ssh()
         -*)
             case $prev in
                 *)
-                    opts="-l --list -c --confirm -v --verbose -y --yes -1 --one --completion-list --completion-script"
+                    opts="-l --list -c --confirm -v --verbose -y --yes -1 "
+                    opts="$opts --one --completion-list --completion-script"
                 ;;
             esac
             ;;
