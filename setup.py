@@ -13,9 +13,7 @@ version = '0.3.11.dev0'
 def read(filename):
     return unicode(codecs.open(filename, encoding='utf-8').read())
 
-long_description = '\n\n'.join([read('README.rst'),
-                                read('CREDITS.rst'),
-                                read('CHANGES.rst')])
+long_description = '\n\n'.join([read('README.rst'), read('CHANGES.rst')])
 
 setup(
     name='awstools',
