@@ -50,9 +50,7 @@ setup(
         'console_scripts': [
             'cfnas = awstools.commands.cfnautoscale:main',
             'cfn = awstools.commands.cloudformation:main',
+            'ec2ssh = awstools.commands.ec2ssh:main',
         ]
-    },
-    scripts=[
-        "scripts/ec2ssh",
-    ]
+    }
 )

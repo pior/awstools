@@ -1,11 +1,33 @@
-import os
+import argparse
 import json
+import os
 import subprocess
 
 import argh
 from argh.exceptions import CommandError
 
 from awstools.utils import ec2
+
+
+def main():
+    epilog = """The 'instance' argument can be one or multiple specifiers
+    separated by commas.
+
+    valid specifiers:
+        Tag Name (or altName):  tt-api-stage
+        Instance ID:            i-1a2b3c4d5e
+        Private IP:             12.34.567.89
+        Private DNS:            domU-12-45-56-AB-CD-EF
+        Wildcard on tag Name:   tt-api-*"""
+
+    parser = argh.ArghParser(
+        epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        )
+
+    argh.set_default_command(parser, connect)
+    argh.dispatch(parser, completion=False)
+
 
 HELP_INSTANCE = "Instance or list of instances"
 HELP_COMMAND = "Command to run on the instances"
