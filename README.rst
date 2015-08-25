@@ -70,7 +70,13 @@ Configuration
 Testing
 =======
 
-Run the test with nose
+Run the test with tox
+
+::
+
+   tox -e py27
+
+With nose
 
 ::
 
@@ -172,12 +178,11 @@ However in test you mock the storage and don't need a *storage* pool.
 All those settings will be available for the CloudFormation templates.
 
 
-
 Contribute
 ==========
 
-Want to contribute, report a but of request a feature ? The development goes on
-at Ludia's BitBucket account:
+Want to contribute, report a bug or request a feature ?
+The development goes on at Ludia's Github account:
 
 - **Report bugs**: https://github.com/ludia/awstools/issues
 - **Fork awstools**: https://github.com/ludia/awstools
